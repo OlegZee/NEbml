@@ -28,7 +28,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace NEbml.Viewer.Controls
+namespace NEbml.MkvTitleEdit.Controls
 {
 	/// <summary>
 	/// Path navigation control.

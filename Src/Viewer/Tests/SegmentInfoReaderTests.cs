@@ -26,10 +26,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using NEbml.Core;
-using NEbml.Viewer.Matroska;
+using NEbml.MkvTitleEdit.Matroska;
 using NUnit.Framework;
 
-namespace NEbml.Viewer.Tests
+namespace NEbml.MkvTitleEdit.Tests
 {
 	[TestFixture]
 	public class SegmentInfoReaderTests

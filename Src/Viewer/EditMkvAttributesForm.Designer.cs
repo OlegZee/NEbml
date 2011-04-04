@@ -1,4 +1,6 @@
-﻿namespace NEbml.Viewer
+﻿using NEbml.MkvTitleEdit.Controls;
+
+namespace NEbml.MkvTitleEdit
 {
 	partial class EditMkvAttributesForm
 	{
@@ -40,7 +42,7 @@
 			this.colEntryType = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colFullPath = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colIsNavigable = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.breadCrumbsPath1 = new NEbml.Viewer.Controls.BreadCrumbsPath();
+			this.breadCrumbsPath1 = new BreadCrumbsPath();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -191,6 +193,6 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn colEntryType;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colFullPath;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colIsNavigable;
-		private NEbml.Viewer.Controls.BreadCrumbsPath breadCrumbsPath1;
+		private BreadCrumbsPath breadCrumbsPath1;
 	}
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<project xmlns="http://nant.sf.net/schemas/nant-0.85.xsd" name="nebml" default="build">
+
+	<property name="dir.projectroot" value="${project::get-base-directory()}" />
+	<property name="dir.output" value="${dir.projectroot}\build" />
+	<property name="dir.outputtests" value="${dir.output}\test" />
+
+	<property name="dir.srccore" value="${dir.projectroot}\src\core" />
+	<property name="dir.srcviewer" value="${dir.projectroot}\src\viewer" />
+	<property name="dir.srclibs" value="${dir.projectroot}\src\libs" />
+
+	<property name="build.nunit" value="false" />
+
+	<target name="build" description="Build the binaries">
+		
+		<!-- build core library -->
+		<mkdir dir="${dir.output}" />
+		
+		<csc target="library" output="${dir.output}\NEbml.Core.dll"
+			doc="${dir.output}\NEbml.Core.xml" warnaserror="false" noconfig="true" warninglevel="0" unsafe="true">
+
+			<sources>
+				<include name="${dir.srccore}\**\*.cs" />
+			</sources>
+
+			<references>
+				<include name="System.dll" />
+				<include name="System.Core.dll" />
+				<include name="${dir.srclibs}\nunit.framework.dll" if="${build.nunit == 'true'}" />
+			</references>
+		</csc>
+
+		<csc target="winexe" output="${dir.output}\MkvTitleEdit.exe"
+			warnaserror="false" noconfig="true" warninglevel="0" unsafe="true">
+
+			<sources>
+				<include name="${dir.srccore}\**\*.cs" />
+				<exclude name="${dir.srccore}\**\AssemblyInfo.cs" />
+				<include name="${dir.srcviewer}\**\*.cs" />
+			</sources>
+
+			<references>
+				<include name="System.dll" />
+				<include name="System.Core.dll" />
+				<include name="System.Drawing.dll" />
+				<include name="System.Windows.Forms.dll" />
+			</references>
+
+			<resources prefix="NEbml.MkvTitleEdit" dynamicprefix="true" failonempty="true" basedir="${dir.srcviewer}">
+				<include name="**/*.resx" />
+			</resources>
+
+		</csc>
+
+	</target>
+
+	<target name="test" description="Creates testing binaries and performs the tests. THIS DOES NOT WORK as NANT does not support nunit 2.4+">
+
+		<!-- build core library -->
+		<mkdir dir="${dir.outputtests}" />
+
+		<csc target="library" output="${dir.outputtests}\NEbml.Core.dll"
+			noconfig="true" warninglevel="0" unsafe="true" define="NUNIT">
+
+			<sources>
+				<include name="${dir.srccore}\**\*.cs" />
+			</sources>
+
+			<references>
+				<include name="System.dll" />
+				<include name="System.Core.dll" />
+				<include name="${dir.srclibs}\nunit.framework.dll" />
+			</references>
+
+		</csc>
+
+		<copy file="${dir.srclibs}\nunit.framework.dll" todir="${dir.outputtests}"  overwrite="false"  />
+		<nunit2>
+			<test assemblyname="${dir.outputtests}\NEbml.Core.dll" />
+		</nunit2>
+
+	</target>
+
+</project>

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using NEbml.Viewer.Properties;
+using NEbml.MkvTitleEdit.Properties;
 
-namespace NEbml.Viewer.ViewModel
+namespace NEbml.MkvTitleEdit.ViewModel
 {
 	abstract partial class ListEntryViewModel
 	{

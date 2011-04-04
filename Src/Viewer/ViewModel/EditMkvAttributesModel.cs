@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using NEbml.Viewer.Matroska;
-using NEbml.Viewer.Properties;
+using NEbml.MkvTitleEdit.Matroska;
+using NEbml.MkvTitleEdit.Properties;
 
-namespace NEbml.Viewer.ViewModel
+namespace NEbml.MkvTitleEdit.ViewModel
 {
 	/// <summary>
 	/// MKV Attributes form model

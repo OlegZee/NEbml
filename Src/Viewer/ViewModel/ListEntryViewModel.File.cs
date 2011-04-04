@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using NEbml.Viewer.Matroska;
+using NEbml.MkvTitleEdit.Matroska;
 
-namespace NEbml.Viewer.ViewModel
+namespace NEbml.MkvTitleEdit.ViewModel
 {
 	partial class ListEntryViewModel
 	{

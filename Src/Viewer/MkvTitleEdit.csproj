@@ -8,8 +8,8 @@
     <ProjectGuid>{F2B2D694-3F87-4578-B36E-8FAB7D63806D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NEbml.Viewer</RootNamespace>
-    <AssemblyName>Viewer</AssemblyName>
+    <RootNamespace>NEbml.MkvTitleEdit</RootNamespace>
+    <AssemblyName>MkvTitleEdit</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>&lt;Project Location In Database&gt;</SccProjectName>
@@ -46,10 +46,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\BreadCrumbsPath.cs">

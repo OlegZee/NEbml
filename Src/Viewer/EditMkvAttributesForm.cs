@@ -4,10 +4,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using NEbml.Viewer.Properties;
-using NEbml.Viewer.ViewModel;
+using NEbml.MkvTitleEdit.ViewModel;
+using NEbml.MkvTitleEdit.Properties;
 
-namespace NEbml.Viewer
+namespace NEbml.MkvTitleEdit
 {
 	/// <summary>
 	/// MKV attributes editing form

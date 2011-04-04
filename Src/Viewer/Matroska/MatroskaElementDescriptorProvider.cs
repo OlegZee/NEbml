@@ -1,6 +1,6 @@
 ﻿using NEbml.Core;
 
-namespace NEbml.Viewer.Matroska
+namespace NEbml.MkvTitleEdit.Matroska
 {
 	public class MatroskaElementDescriptorProvider : DefaultElementDescriptorProvider
 	{

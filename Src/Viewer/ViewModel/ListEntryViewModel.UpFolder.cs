@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace NEbml.Viewer.ViewModel
+namespace NEbml.MkvTitleEdit.ViewModel
 {
 	partial class ListEntryViewModel
 	{

@@ -25,7 +25,7 @@ using System.Linq;
 using System.IO;
 using NEbml.Core;
 
-namespace NEbml.Viewer.Matroska
+namespace NEbml.MkvTitleEdit.Matroska
 {
 	/// <summary>
 	/// Provides very basic Mkv Segment Info fields update functionality
