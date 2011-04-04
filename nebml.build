@@ -6,7 +6,7 @@
 	<property name="dir.outputtests" value="${dir.output}\test" />
 
 	<property name="dir.srccore" value="${dir.projectroot}\src\core" />
-	<property name="dir.srcviewer" value="${dir.projectroot}\src\viewer" />
+	<property name="dir.srctitleedit" value="${dir.projectroot}\src\mkvtitleedit" />
 	<property name="dir.srclibs" value="${dir.projectroot}\src\libs" />
 
 	<property name="build.nunit" value="false" />
@@ -36,7 +36,7 @@
 			<sources>
 				<include name="${dir.srccore}\**\*.cs" />
 				<exclude name="${dir.srccore}\**\AssemblyInfo.cs" />
-				<include name="${dir.srcviewer}\**\*.cs" />
+				<include name="${dir.srctitleedit}\**\*.cs" />
 			</sources>
 
 			<references>
@@ -46,7 +46,7 @@
 				<include name="System.Windows.Forms.dll" />
 			</references>
 
-			<resources prefix="NEbml.MkvTitleEdit" dynamicprefix="true" failonempty="true" basedir="${dir.srcviewer}">
+			<resources prefix="NEbml.MkvTitleEdit" dynamicprefix="true" failonempty="true" basedir="${dir.srctitleedit}">
 				<include name="**/*.resx" />
 			</resources>
 

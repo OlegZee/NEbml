@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MkvTitleEdit", "Viewer\MkvTitleEdit.csproj", "{F2B2D694-3F87-4578-B36E-8FAB7D63806D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MkvTitleEdit", "MkvTitleEdit\MkvTitleEdit.csproj", "{F2B2D694-3F87-4578-B36E-8FAB7D63806D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{38D51CF9-B33C-434F-9E5C-44B2F8C652F2}"
 EndProject
