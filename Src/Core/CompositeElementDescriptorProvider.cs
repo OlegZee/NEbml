@@ -22,7 +22,7 @@ namespace NEbml.Core
 
 			if (providers.All(provider => provider == null))
 			{
-				throw new ArgumentException("All providers are empty");
+				throw new ArgumentException("All providers are empty", "providers");
 			}
 
 			_providers = providers.Where(d => d != null).ToArray();
@@ -30,9 +30,9 @@ namespace NEbml.Core
 
 		#region ElementDescriptorProvider Members
 
-		public bool SupportsElementIdentifier(VInt identifier)
+		public bool HasElementIdentifier(VInt identifier)
 		{
-			return _providers.Any(provider => provider.SupportsElementIdentifier(identifier));
+			return _providers.Any(provider => provider.HasElementIdentifier(identifier));
 		}
 
 		public ElementDescriptor GetElementDescriptor(VInt identifier)

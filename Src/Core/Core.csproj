@@ -53,15 +53,13 @@
     <Compile Include="EbmlDescriptorProvider.cs" />
     <Compile Include="EbmlWriter.cs" />
     <Compile Include="ElementDescriptor.cs" />
-    <Compile Include="ElementTypeAttribute.cs" />
     <Compile Include="IElementDescriptorProvider.cs" />
     <Compile Include="ElementType.cs" />
-    <Compile Include="EncodeImpl.cs" />
     <Compile Include="EbmlDataFormatException.cs" />
     <Compile Include="EbmlReader.cs" />
+    <Compile Include="MasterBlockWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\EbmlWriterTests.cs" />
-    <Compile Include="Tests\IntegerEncodingTests.cs" />
     <Compile Include="Tests\VIntTests.cs" />
     <Compile Include="VInt.cs" />
   </ItemGroup>

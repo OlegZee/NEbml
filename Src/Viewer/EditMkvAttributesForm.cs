@@ -9,6 +9,9 @@ using NEbml.Viewer.ViewModel;
 
 namespace NEbml.Viewer
 {
+	/// <summary>
+	/// MKV attributes editing form
+	/// </summary>
 	internal partial class EditMkvAttributesForm : Form
 	{
 		private EditMkvAttributesModel _model;

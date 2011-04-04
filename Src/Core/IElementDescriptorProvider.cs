@@ -12,7 +12,7 @@ namespace NEbml.Core
 		/// </summary>
 		/// <param name="identifier">the element identifier</param>
 		/// <returns><code>true</code> if the specified identifier is supported; <code>false</code> otherwise</returns>
-		bool SupportsElementIdentifier(VInt identifier);
+		bool HasElementIdentifier(VInt identifier);
 
 		/// <summary>
 		/// Returns the descriptor of an element with the specified identifier.

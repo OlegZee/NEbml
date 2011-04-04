@@ -1,4 +1,26 @@
-﻿using System;
+﻿/* Copyright (c) 2011 Oleg Zee
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * */
+
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,17 +34,38 @@ namespace NEbml.Core
 	{
 		protected readonly Stream _stream;
 
+		/// <summary>
+		/// Initializes a new instance of the EbmlWriter class
+		/// </summary>
+		/// <param name="stream"></param>
 		public EbmlWriter(Stream stream)
 		{
 			if (stream == null) throw new ArgumentNullException("stream");
 			_stream = stream;
 		}
 
+		/// <summary>
+		/// Starts nested stream. Upon disposal of nested stream, the size is calculated and written to nested element header.
+		/// Example:
+		/// using(var data = writer.StartMasterElement(InnerDataElementId))
+		/// {
+		///     data.WriteInt(DataItem1Id, 139874)
+		///     data.WriteUtf(DataItem2Id, "Hello world");
+		/// }
+		/// </summary>
+		/// <param name="elementId"></param>
+		/// <returns></returns>
 		public MasterBlockWriter StartMasterElement(VInt elementId)
 		{
 			return new MasterBlockWriter(this, elementId);
 		}
 
+		/// <summary>
+		/// Writes element header
+		/// </summary>
+		/// <param name="elementId"></param>
+		/// <param name="size"></param>
+		/// <returns></returns>
 		public int WriteElementHeader(VInt elementId, VInt size)
 		{
 			return elementId.Write(_stream) + size.Write(_stream);
@@ -160,13 +203,20 @@ namespace NEbml.Core
 			return Write(elementId, buffer, 0, buffer.Length);
 		}
 
-		#endregion
-
+		/// <summary>
+		/// Writes raw binary data
+		/// </summary>
+		/// <param name="buffer"></param>
+		/// <param name="offset"></param>
+		/// <param name="length"></param>
+		/// <returns></returns>
 		public int Write(byte[] buffer, int offset, int length)
 		{
 			_stream.Write(buffer, offset, length);
 			return length;
 		}
+
+		#endregion
 
 		#region Implementation
 
@@ -218,44 +268,4 @@ namespace NEbml.Core
 
 		#endregion
 	}
-
-	/// <summary>
-	/// Supplementary EbmlWriter implementation for use with StartMasterElement method
-	/// </summary>
-	public class MasterBlockWriter : EbmlWriter, IDisposable
-	{
-		private readonly Action _flushImpl;
-
-		internal MasterBlockWriter(EbmlWriter writer, VInt elementId)
-			: base(new MemoryStream())
-		{
-			bool flushed = false;
-			_flushImpl = () =>
-				{
-					if (!flushed)
-					{
-						var data = ((MemoryStream) _stream).ToArray();
-						writer.Write(elementId, data);
-
-						flushed = true;
-						_stream.Close();
-					}
-				};
-
-		}
-
-		/// <summary>
-		/// Flushed the writer data to master stream
-		/// </summary>
-		public void FlushData()
-		{
-			_flushImpl();
-		}
-
-		public void Dispose()
-		{
-			FlushData();
-		}
-	}
-
 }

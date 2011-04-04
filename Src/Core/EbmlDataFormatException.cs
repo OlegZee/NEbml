@@ -2,7 +2,6 @@ using System;
 
 namespace NEbml.Core
 {
-
 	/// <summary>
 	/// Thrown to indicate the EBML data format violation.
 	/// </summary>
@@ -21,9 +20,5 @@ namespace NEbml.Core
 			: base(message, cause)
 		{
 		}
-
-		//  public EbmlDataFormatException(Exception cause) : base("", cause)
-		//	{
-		//  }
 	}
 }

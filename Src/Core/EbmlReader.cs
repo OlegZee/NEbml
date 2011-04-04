@@ -1,3 +1,27 @@
+/* Copyright (c) 2011 Oleg Zee
+ * 
+ * Original java code Copyright (c) 2008, Oleg S. Estekhin
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -5,8 +29,6 @@ using System.Text;
 
 namespace NEbml.Core
 {
-	using IllegalStateException = InvalidOperationException;
-
 	/// <summary>
 	/// The <code>EbmlReader</code> interface allows forward, read-only access to EBML data.
 	/// </summary>
@@ -86,13 +108,13 @@ namespace NEbml.Core
 		/// Returns the identifier of the current element.
 		/// </summary>
 		/// <value>the element identifier</value>
-		/// <exception cref="IllegalStateException">if the current element is not available</exception>
+		/// <exception cref="InvalidOperationException">if the current element is not available</exception>
 		public VInt ElementId
 		{
 			get
 			{
 				if (_element.HasInvalidIdentifier)
-					throw new IllegalStateException();
+					throw new InvalidOperationException();
 				return _element.Identifier;
 			}
 		}
@@ -101,13 +123,13 @@ namespace NEbml.Core
 		/// Returns the data size of the current element.
 		/// </summary>
 		/// <value>the element data size in the encoded form</value>
-		/// <exception cref="IllegalStateException">if the current element is not available</exception>
+		/// <exception cref="InvalidOperationException">if the current element is not available</exception>
 		public long ElementSize
 		{
 			get
 			{
 				if (_element.HasInvalidIdentifier)
-					throw new IllegalStateException();
+					throw new InvalidOperationException();
 				return _element.Size;
 			}
 		}
@@ -124,12 +146,12 @@ namespace NEbml.Core
 		/// Instructs the reader to parse the current element data as sub-elements. The current container 
 		/// will be saved on the stack and the current element will become the new container.
 		/// </summary>
-		/// <exception cref="IllegalStateException">if the current element is not available or if the element data was already accessed as some other type</exception>
+		/// <exception cref="InvalidOperationException">if the current element is not available or if the element data was already accessed as some other type</exception>
 		public void EnterContainer()
 		{
 			if (_element.HasInvalidIdentifier || _element.Size != _element.Remaining || _element.Type != ElementType.None)
 			{
-				throw new IllegalStateException();
+				throw new InvalidOperationException();
 			}
 			_containers.Push(_container);
 			_container = _element;
@@ -140,14 +162,14 @@ namespace NEbml.Core
 		/// <summary>
 		/// Instructs the reader to return to the previous container.
 		/// </summary>
-		/// <exception cref="IllegalStateException">if the current container represents the whole input source</exception>
+		/// <exception cref="InvalidOperationException">if the current container represents the whole input source</exception>
 		/// <exception cref="EndOfStreamException">if the input source reaches the end before reading all the bytes</exception>
 		/// <exception cref="IOException">if an I/O error has occurred</exception>
 		public void LeaveContainer()
 		{
 			if (_containers.Count == 0)
 			{
-				throw new IllegalStateException();
+				throw new InvalidOperationException();
 			}
 			_container.Remaining -= _element.Size;
 			Skip(_container.Remaining);
@@ -165,7 +187,7 @@ namespace NEbml.Core
 		{
 			if (_element.HasInvalidIdentifier || _element.Size != _element.Remaining || _element.Type != ElementType.None)
 			{
-				throw new IllegalStateException();
+				throw new InvalidOperationException();
 			}
 			if (_element.Size > 8)
 			{
@@ -181,13 +203,13 @@ namespace NEbml.Core
 		/// Reads the element data as an unsigned integer.
 		/// </summary>
 		/// <returns>the element data as an unsigned integer</returns>
-		/// <exception cref="IllegalStateException">if the current element is not available or if the element data was already accessed as some other type</exception>
+		/// <exception cref="InvalidOperationException">if the current element is not available or if the element data was already accessed as some other type</exception>
 		/// <exception cref="EbmlDataFormatException">if the element size is greater than <code>8</code></exception>
 		public ulong ReadUInt()
 		{
 			if (_element.HasInvalidIdentifier || _element.Size != _element.Remaining || _element.Type != ElementType.None)
 			{
-				throw new IllegalStateException();
+				throw new InvalidOperationException();
 			}
 			if (_element.Size > 8)
 			{
@@ -210,7 +232,7 @@ namespace NEbml.Core
 		{
 			if (_element.HasInvalidIdentifier || _element.Size != _element.Remaining || _element.Type != ElementType.None)
 			{
-				throw new IllegalStateException();
+				throw new InvalidOperationException();
 			}
 			if (_element.Size != 4 && _element.Size != 8)
 			{
@@ -239,7 +261,7 @@ namespace NEbml.Core
 		{
 			if (_element.HasInvalidIdentifier || _element.Size != _element.Remaining || _element.Type != ElementType.None)
 			{
-				throw new IllegalStateException();
+				throw new InvalidOperationException();
 			}
 			if (_element.Size != 8)
 			{
@@ -282,7 +304,7 @@ namespace NEbml.Core
 		{
 			if (_element.HasInvalidIdentifier || _element.Type != ElementType.None && _element.Type != ElementType.Binary)
 			{
-				throw new IllegalStateException();
+				throw new InvalidOperationException();
 			}
 			_element.Type = ElementType.Binary;
 			if (_element.Remaining == 0L)
@@ -448,7 +470,7 @@ namespace NEbml.Core
 		{
 			if (_element.HasInvalidIdentifier || _element.Size != _element.Remaining || _element.Type != ElementType.None)
 			{
-				throw new IllegalStateException();
+				throw new InvalidOperationException();
 			}
 			_element.Type = ElementType.AsciiString; // or UTF_8_STRING, but for the housekeeping it does not matter
 			var encodedValueSize = (int) _element.Size;
