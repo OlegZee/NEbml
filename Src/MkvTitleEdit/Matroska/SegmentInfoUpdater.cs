@@ -176,18 +176,18 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 			var readMap = new[]
 				{
-					new {Element = MatroskaElementDescriptorProvider.Title, Code = new Action(() => _title = reader.ReadUtf())},
-					new {Element = MatroskaElementDescriptorProvider.WritingApp, Code = new Action(() => _writingApp = reader.ReadUtf())},
-					new {Element = MatroskaElementDescriptorProvider.MuxingApp, Code = new Action(() => MuxingApp = reader.ReadUtf())},
-					new {Element = MatroskaElementDescriptorProvider.Duration, Code = new Action(() => Duration = TimeSpan.FromMilliseconds(reader.ReadFloat()))},
+					new {Element = MatroskaDtd.Segment.Info.Title, Code = new Action(() => _title = reader.ReadUtf())},
+					new {Element = MatroskaDtd.Segment.Info.WritingApp, Code = new Action(() => _writingApp = reader.ReadUtf())},
+					new {Element = MatroskaDtd.Segment.Info.MuxingApp, Code = new Action(() => MuxingApp = reader.ReadUtf())},
+					new {Element = MatroskaDtd.Segment.Info.Duration, Code = new Action(() => Duration = TimeSpan.FromMilliseconds(reader.ReadFloat()))},
 				};
 
-			if (!reader.LocateElement(MatroskaElementDescriptorProvider.Segment))
+			if (!reader.LocateElement(MatroskaDtd.Segment))
 				throw new InvalidDataException("Failed to locate Segment");
 
 			reader.EnterContainer();
 
-			var segmentInfoIdentifier = MatroskaElementDescriptorProvider.SegmentInfo.Identifier;
+			var segmentInfoIdentifier = MatroskaDtd.Segment.Info.Identifier;
 
 			// support for Void block right before SegmentInfo
 			var priorElementId = VInt.MakeId(0);
@@ -204,7 +204,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 			if (reader.ElementId != segmentInfoIdentifier)
 				throw new InvalidDataException("Failed to locate Segment");
 
-			_dataStart = priorElementId == EbmlDescriptorProvider.Void.Identifier ? priorElementStart : reader.ElementPosition;
+			_dataStart = priorElementId == StandardDtd.Void.Identifier ? priorElementStart : reader.ElementPosition;
 			var oldDataStart = reader.ElementPosition;
 
 			reader.EnterContainer();
@@ -220,7 +220,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 			// getting start of the next element
 			reader.ReadNext();
-			if (reader.ElementId == EbmlDescriptorProvider.Void.Identifier)
+			if (reader.ElementId == StandardDtd.Void.Identifier)
 			{
 				reader.ReadNext();
 			}
@@ -242,8 +242,8 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 			var writeMap = new[]
 				{
-					new {Id = MatroskaElementDescriptorProvider.Title.Identifier, Value = _title},
-					new {Id = MatroskaElementDescriptorProvider.WritingApp.Identifier, Value = _writingApp},
+					new {Id = MatroskaDtd.Segment.Info.Title.Identifier, Value = _title},
+					new {Id = MatroskaDtd.Segment.Info.WritingApp.Identifier, Value = _writingApp},
 				};
 
 			// enter the Segment block
@@ -270,12 +270,12 @@ namespace NEbml.MkvTitleEdit.Matroska
 			var outStream = new MemoryStream(_dataLength);
 			var writer = new EbmlWriter(outStream);
 
-			writer.Write(MatroskaElementDescriptorProvider.SegmentInfo.Identifier, infoStream.ToArray());
+			writer.Write(MatroskaDtd.Segment.Info.Identifier, infoStream.ToArray());
 			var extraByteCount = _dataLength - outStream.Position;
 
 			if (extraByteCount != 0)
 			{
-				var extraHLen = EbmlDescriptorProvider.Void.Identifier.Length + 2;
+				var extraHLen = StandardDtd.Void.Identifier.Length + 2;
 
 				var blankDataLen = (int) (extraByteCount - extraHLen);
 				if (blankDataLen < 0)
@@ -283,7 +283,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 					throw new InvalidOperationException(string.Format("Not enough space to put the new data, {0} bytes to feet", -blankDataLen));
 				}
 
-				writer.WriteElementHeader(EbmlDescriptorProvider.Void.Identifier, VInt.EncodeSize((ulong)blankDataLen, 2));
+				writer.WriteElementHeader(StandardDtd.Void.Identifier, VInt.EncodeSize((ulong)blankDataLen, 2));
 				writer.Write(new byte[blankDataLen], 0, blankDataLen);
 			}
 

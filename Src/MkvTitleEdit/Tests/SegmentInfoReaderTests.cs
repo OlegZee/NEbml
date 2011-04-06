@@ -60,14 +60,14 @@ namespace NEbml.MkvTitleEdit.Tests
 			var stream = new MemoryStream();
 			var writer = new EbmlWriter(stream);
 
-			using (var segment = writer.StartMasterElement(MatroskaElementDescriptorProvider.Segment.Identifier))
+			using (var segment = writer.StartMasterElement(MatroskaDtd.Segment.Identifier))
 			{
-				using (var segmentInfo = segment.StartMasterElement(MatroskaElementDescriptorProvider.SegmentInfo.Identifier))
+				using (var segmentInfo = segment.StartMasterElement(MatroskaDtd.Segment.Info.Identifier))
 				{
-					segmentInfo.WriteUtf(MatroskaElementDescriptorProvider.Title.Identifier, "Test data");
-					segmentInfo.WriteUtf(MatroskaElementDescriptorProvider.WritingApp.Identifier, "writing app");
-					segmentInfo.WriteUtf(MatroskaElementDescriptorProvider.MuxingApp.Identifier, "mux app");
-					segmentInfo.Write(MatroskaElementDescriptorProvider.Duration.Identifier, 1234f);
+					segmentInfo.WriteUtf(MatroskaDtd.Segment.Info.Title.Identifier, "Test data");
+					segmentInfo.WriteUtf(MatroskaDtd.Segment.Info.WritingApp.Identifier, "writing app");
+					segmentInfo.WriteUtf(MatroskaDtd.Segment.Info.MuxingApp.Identifier, "mux app");
+					segmentInfo.Write(MatroskaDtd.Segment.Info.Duration.Identifier, 1234f);
 				}
 
 				// write some dummy data
@@ -91,15 +91,15 @@ namespace NEbml.MkvTitleEdit.Tests
 			var writer = new EbmlWriter(stream);
 
 			writer.Write(VInt.MakeId(122), 321);
-			using (var segment = writer.StartMasterElement(MatroskaElementDescriptorProvider.Segment.Identifier))
+			using (var segment = writer.StartMasterElement(MatroskaDtd.Segment.Identifier))
 			{
-				using (var segmentInfo = segment.StartMasterElement(MatroskaElementDescriptorProvider.SegmentInfo.Identifier))
+				using (var segmentInfo = segment.StartMasterElement(MatroskaDtd.Segment.Info.Identifier))
 				{
-					segmentInfo.WriteUtf(MatroskaElementDescriptorProvider.Title.Identifier, "Test data");
+					segmentInfo.WriteUtf(MatroskaDtd.Segment.Info.Title.Identifier, "Test data");
 				}
 
 				// write some dummy data
-				segment.Write(EbmlDescriptorProvider.Void.Identifier, new byte[1000]);
+				segment.Write(StandardDtd.Void.Identifier, new byte[1000]);
 				segment.Write(VInt.MakeId(123), 123);	// marker
 			}
 
@@ -120,15 +120,15 @@ namespace NEbml.MkvTitleEdit.Tests
 			Assert.AreEqual(321, reader.ReadInt());
 
 			reader.ReadNext();
-			Assert.AreEqual(MatroskaElementDescriptorProvider.Segment.Identifier, reader.ElementId);
+			Assert.AreEqual(MatroskaDtd.Segment.Identifier, reader.ElementId);
 			reader.EnterContainer();
 
 			reader.ReadNext();
-			Assert.AreEqual(MatroskaElementDescriptorProvider.SegmentInfo.Identifier, reader.ElementId);
+			Assert.AreEqual(MatroskaDtd.Segment.Info.Identifier, reader.ElementId);
 			Assert.Greater(reader.ElementSize, 500);
 
 			reader.ReadNext();
-			Assert.AreEqual(EbmlDescriptorProvider.Void.Identifier, reader.ElementId);
+			Assert.AreEqual(StandardDtd.Void.Identifier, reader.ElementId);
 
 			reader.ReadNext();
 			Assert.AreEqual(123, reader.ElementId.Value, "end data marker");
@@ -142,13 +142,13 @@ namespace NEbml.MkvTitleEdit.Tests
 			var writer = new EbmlWriter(stream);
 
 			writer.Write(VInt.MakeId(122), 321);
-			using (var segment = writer.StartMasterElement(MatroskaElementDescriptorProvider.Segment.Identifier))
+			using (var segment = writer.StartMasterElement(MatroskaDtd.Segment.Identifier))
 			{
-				segment.Write(EbmlDescriptorProvider.Void.Identifier, new byte[1000]);
+				segment.Write(StandardDtd.Void.Identifier, new byte[1000]);
 
-				using (var segmentInfo = segment.StartMasterElement(MatroskaElementDescriptorProvider.SegmentInfo.Identifier))
+				using (var segmentInfo = segment.StartMasterElement(MatroskaDtd.Segment.Info.Identifier))
 				{
-					segmentInfo.WriteUtf(MatroskaElementDescriptorProvider.Title.Identifier, "Test data");
+					segmentInfo.WriteUtf(MatroskaDtd.Segment.Info.Title.Identifier, "Test data");
 				}
 
 				// write some dummy data
@@ -172,15 +172,15 @@ namespace NEbml.MkvTitleEdit.Tests
 			Assert.AreEqual(321, reader.ReadInt());
 
 			reader.ReadNext();
-			Assert.AreEqual(MatroskaElementDescriptorProvider.Segment.Identifier, reader.ElementId);
+			Assert.AreEqual(MatroskaDtd.Segment.Identifier, reader.ElementId);
 			reader.EnterContainer();
 
 			reader.ReadNext();
-			Assert.AreEqual(MatroskaElementDescriptorProvider.SegmentInfo.Identifier, reader.ElementId);
+			Assert.AreEqual(MatroskaDtd.Segment.Info.Identifier, reader.ElementId);
 			Assert.Greater(reader.ElementSize, 500);
 
 			reader.ReadNext();
-			Assert.AreEqual(EbmlDescriptorProvider.Void.Identifier, reader.ElementId);
+			Assert.AreEqual(StandardDtd.Void.Identifier, reader.ElementId);
 
 			reader.ReadNext();
 			Assert.AreEqual(123, reader.ElementId.Value, "end data marker");

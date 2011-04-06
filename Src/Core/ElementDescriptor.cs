@@ -6,7 +6,7 @@ namespace NEbml.Core
 	/// <summary>
 	/// Defined the EBML element description.
 	/// </summary>
-	public sealed class ElementDescriptor
+	public class ElementDescriptor
 	{
 		private readonly VInt _identifier;
 		private readonly String _name;

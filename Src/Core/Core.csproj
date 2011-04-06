@@ -44,14 +44,13 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CompositeElementDescriptorProvider.cs" />
-    <Compile Include="DefaultElementDescriptorProvider.cs" />
-    <Compile Include="EbmlDescriptorProvider.cs" />
+    <Compile Include="DTDBase.cs" />
     <Compile Include="EbmlWriter.cs" />
     <Compile Include="ElementDescriptor.cs" />
-    <Compile Include="IElementDescriptorProvider.cs" />
     <Compile Include="ElementType.cs" />
     <Compile Include="EbmlDataFormatException.cs" />
     <Compile Include="EbmlReader.cs" />
