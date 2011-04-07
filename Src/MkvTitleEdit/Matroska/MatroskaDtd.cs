@@ -29,11 +29,14 @@ namespace NEbml.MkvTitleEdit.Matroska
 		private MatroskaDtd() { }
 
 		public static readonly SegmentDesc
-			Segment = new SegmentDesc(0x18538067);
+			Segment = new SegmentDesc();
+
+		public static readonly TracksDesc
+			Tracks = new TracksDesc();
 
 		public sealed class SegmentDesc : MasterElementDescriptor
 		{
-			internal SegmentDesc(long identifier) : base(identifier) {}
+			internal SegmentDesc() : base(0x18538067) { }
 
 			public readonly SeekHeadDesc SeekHead = new SeekHeadDesc(0x114d9b74);
 			public readonly SegmentInfoDesc Info = new SegmentInfoDesc(0x1549a966);
@@ -56,183 +59,236 @@ namespace NEbml.MkvTitleEdit.Matroska
 					   SeekPosition = Uint(0x53ac);
 				}
 			}
-		}
 
-		public sealed class SegmentInfoDesc : MasterElementDescriptor
-		{
-			internal SegmentInfoDesc(long identifier)
-				: base(identifier)
-			{ }
-
-			public readonly ElementDescriptor
-				SegmentUID = Binary(0x73a4),
-				SegmentFilename = Utf8(0x7384),
-				PrevUID = Binary(0x3cb923),
-				PrevFilename = Utf8(0x3c83ab),
-				NextUID = Binary(0x3eb923),
-				NextFilename = Utf8(0x3e83bb),
-				TimecodeScale = Uint(0x2ad7b1), //  [ def:1000000; ]
-				Duration = Float(0x4489), // [ range:>0.0; ]
-				DateUTC = Date(0x4461),
-				Title = Utf8(0x7ba9),
-				MuxingApp = Utf8(0x4d80),
-				WritingApp = Utf8(0x5741);
-		}
-
-		public sealed class ClusterDesc : MasterElementDescriptor
-		{
-			internal ClusterDesc(long identifier)
-				: base(identifier)
-			{ }
-
-			public readonly ElementDescriptor
-				Timecode = Uint(0xe7),
-				Position = Uint(0xa7),
-				PrevSize = Uint(0xab);
-
-			public readonly BlockGroupDesc
-				BlockGroup = new BlockGroupDesc(0xa0);
-		}
-
-		public sealed class BlockGroupDesc : MasterElementDescriptor
-		{
-			internal BlockGroupDesc(long identifier)
-				: base(identifier)
-			{ }
-
-			public readonly BlockAdditionsDesc
-				BlockAdditions = new BlockAdditionsDesc(0x75a1);
-
-			public readonly ElementDescriptor
-				Block = Binary(0xa1),
-				BlockVirtual = Binary(0xa2),
-
-				BlockDuration = Uint(0x9b), //[ def:TrackDuration; ];
-				ReferencePriority = Uint(0xfa),
-				ReferenceBlock = Int(0xfb), //[ card:*; ]
-				ReferenceVirtual = Int(0xfd),
-				CodecState = Binary(0xa4);
-
-			public readonly SlicesDesc
-				Slices = new SlicesDesc(0x8e);
-
-			public sealed class BlockAdditionsDesc : MasterElementDescriptor
+			public sealed class SegmentInfoDesc : MasterElementDescriptor
 			{
-				internal BlockAdditionsDesc(long identifier)
+				internal SegmentInfoDesc(long identifier)
 					: base(identifier)
 				{ }
 
-				public readonly BlockMoreDesc
-					BlockMore = new BlockMoreDesc(0xa6);
+				public readonly ElementDescriptor
+					SegmentUID = Binary(0x73a4),
+					SegmentFilename = Utf8(0x7384),
+					PrevUID = Binary(0x3cb923),
+					PrevFilename = Utf8(0x3c83ab),
+					NextUID = Binary(0x3eb923),
+					NextFilename = Utf8(0x3e83bb),
+					TimecodeScale = Uint(0x2ad7b1), //  [ def:1000000; ]
+					Duration = Float(0x4489), // [ range:>0.0; ]
+					DateUTC = Date(0x4461),
+					Title = Utf8(0x7ba9),
+					MuxingApp = Utf8(0x4d80),
+					WritingApp = Utf8(0x5741);
+			}
 
-				public sealed class BlockMoreDesc : MasterElementDescriptor
+			public sealed class ClusterDesc : MasterElementDescriptor
+			{
+				internal ClusterDesc(long identifier)
+					: base(identifier)
+				{ }
+
+				public readonly ElementDescriptor
+					Timecode = Uint(0xe7),
+					Position = Uint(0xa7),
+					PrevSize = Uint(0xab);
+
+				public readonly BlockGroupDesc
+					BlockGroup = new BlockGroupDesc(0xa0);
+
+				public sealed class BlockGroupDesc : MasterElementDescriptor
 				{
-					internal BlockMoreDesc(long identifier)
+					internal BlockGroupDesc(long identifier)
 						: base(identifier)
 					{ }
 
-					public readonly ElementDescriptor
-					   BlockAddID = Uint(0xee),	// [ range:1..; ]
-					   BlockAdditional = Binary(0xa5);
-				}
-			}
-
-			public sealed class SlicesDesc : MasterElementDescriptor
-			{
-				internal SlicesDesc(long identifier)
-					: base(identifier)
-				{ }
-
-				public readonly TimeSliceDesc
-					TimeSlice = new TimeSliceDesc(0xe8);
-
-				public sealed class TimeSliceDesc : MasterElementDescriptor
-				{
-					internal TimeSliceDesc(long identifier) : base(identifier) { }
+					public readonly BlockAdditionsDesc
+						BlockAdditions = new BlockAdditionsDesc(0x75a1);
 
 					public readonly ElementDescriptor
-						LaceNumber = Uint(0xcc),  // [ def:0; ]
-						FrameNumber = Uint(0xcd), // [ def:0; ]
-						BlockAdditionID = Uint(0xcb), // [ def:0; ]
-						Delay = Uint(0xce),       // [ def:0; ]
-						Duration = Uint(0xcf);    // [ def:TrackDuration; ];
+						Block = Binary(0xa1),
+						BlockVirtual = Binary(0xa2),
+
+						BlockDuration = Uint(0x9b), //[ def:TrackDuration; ];
+						ReferencePriority = Uint(0xfa),
+						ReferenceBlock = Int(0xfb), //[ card:*; ]
+						ReferenceVirtual = Int(0xfd),
+						CodecState = Binary(0xa4);
+
+					public readonly SlicesDesc
+						Slices = new SlicesDesc(0x8e);
+
+					public sealed class BlockAdditionsDesc : MasterElementDescriptor
+					{
+						internal BlockAdditionsDesc(long identifier)
+							: base(identifier)
+						{ }
+
+						public readonly BlockMoreDesc
+							BlockMore = new BlockMoreDesc(0xa6);
+
+						public sealed class BlockMoreDesc : MasterElementDescriptor
+						{
+							internal BlockMoreDesc(long identifier)
+								: base(identifier)
+							{ }
+
+							public readonly ElementDescriptor
+							   BlockAddID = Uint(0xee),	// [ range:1..; ]
+							   BlockAdditional = Binary(0xa5);
+						}
+					}
+
+					public sealed class SlicesDesc : MasterElementDescriptor
+					{
+						internal SlicesDesc(long identifier)
+							: base(identifier)
+						{ }
+
+						public readonly TimeSliceDesc
+							TimeSlice = new TimeSliceDesc(0xe8);
+
+						public sealed class TimeSliceDesc : MasterElementDescriptor
+						{
+							internal TimeSliceDesc(long identifier) : base(identifier) { }
+
+							public readonly ElementDescriptor
+								LaceNumber = Uint(0xcc),  // [ def:0; ]
+								FrameNumber = Uint(0xcd), // [ def:0; ]
+								BlockAdditionID = Uint(0xcb), // [ def:0; ]
+								Delay = Uint(0xce),       // [ def:0; ]
+								Duration = Uint(0xcf);    // [ def:TrackDuration; ];
+						}
+					}
 				}
 			}
 		}
+
+		public sealed class TracksDesc : MasterElementDescriptor
+		{
+			internal TracksDesc(): base(0x1654ae6b) { }
+
+			public readonly TrackEntryDesc
+				TrackEntry = new TrackEntryDesc(0xae);
+
+			public sealed class TrackEntryDesc : MasterElementDescriptor
+			{
+				internal TrackEntryDesc(long identifier)
+					: base(identifier)
+				{ }
+
+				public readonly ElementDescriptor
+					TrackNumber = Uint(0xd7), // [ range:1..; ]
+					TrackUID = Uint(0x73c5),  // [ range:1..; ]
+					TrackType = Uint(0x83),   // [ range:1..254; ]
+					FlagEnabled = Uint(0xb9), // [ range:0..1; def:1; ]
+					FlagDefault = Uint(0x88), // [ range:0..1; def:1; ]
+					FlagLacing = Uint(0x9c),  // [ range:0..1; def:1; ]
+					MinCache = Uint(0x6de7),  // [ def:0; ]
+					MaxCache = Uint(0x6df8),
+					DefaultDuration = Uint(0x23e383),     //  uint [ range:1..; ]
+					TrackTimecodeScale = Float(0x23314f), //  [ range:>0.0; def:1.0; ]
+					Name = Utf8(0x536e),
+					Language = Ascii(0x22b59c),           //  [ def:"eng"; ]
+					CodecID = Ascii(0x86),
+					CodecPrivate = Binary(0x63a2),
+					CodecName = Utf8(0x258688),
+					CodecSettings = Utf8(0x3a9697),
+					CodecInfoURL = Ascii(0x3b4040),
+					CodecDownloadURL = Ascii(0x26b240),
+					CodecDecodeAll = Uint(0xaa),          // [ range:0..1; def:1; ]
+					TrackOverlay = Uint(0x6fab);
+
+				public readonly VideoDesc
+					Video = new VideoDesc();
+				public readonly AudioDesc
+					Audio = new AudioDesc();
+				public readonly ContentEncodingsDesc
+					ContentEncodings = new ContentEncodingsDesc();
+
+				public sealed class VideoDesc : MasterElementDescriptor
+				{
+					internal VideoDesc() : base(0xe0)
+					{}
+
+					public readonly ElementDescriptor
+						FlagInterlaced = Uint(0x9a),	// [range:0..1; def:0;]
+						StereoMode = Uint(0x53b8),		// [range:0..3; def:0;]
+						PixelWidth = Uint(0xb0),		// [range:1..;]
+						PixelHeight = Uint(0xba),		// [range:1..;]
+						DisplayWidth = Uint(0x54b0),	// [def:PixelWidth; ]
+						DisplayHeight = Uint(0x54ba),	// [ def:PixelHeight; ]
+						DisplayUnit = Uint(0x54b2),		// [ def:0; ]
+						AspectRatioType = Uint(0x54b3),	// [ def:0; ]
+						ColourSpace = Binary(0x2eb524),
+						GammaValue = Float(0x2fb523)	// [range:>0.0;]
+					;
+				}
+
+				public sealed class AudioDesc : MasterElementDescriptor
+				{
+					internal AudioDesc(): base(0xe1)
+					{}
+
+					public readonly ElementDescriptor
+						SamplingFrequency = Float(0xb5),		// [ range:>0.0; def:8000.0; ]
+						OutputSamplingFrequency = Float(0x78b5),// [range:>0.0; def:8000.0; ]
+						Channels = Uint(0x94),					// [ range:1..; def:1; ]
+						ChannelPositions = Binary(0x7d7b),
+						BitDepth = Uint(0x6264)					// uint [ range:1..; ]
+						;
+				}
+
+				public sealed class ContentEncodingsDesc : MasterElementDescriptor
+				{
+					internal ContentEncodingsDesc():base(0x6d80){}
+
+					public sealed class ContentEncodingDesc : MasterElementDescriptor
+					{
+						internal ContentEncodingDesc()
+							: base(0x6240)
+						{ }
+
+						public readonly ElementDescriptor
+							ContentEncodingOrder = Uint(0x5031),
+							ContentEncodingScope = Uint(0x5032),
+							ContentEncodingType = Uint(0x5033);
+
+						public readonly ContentCompressionDesc
+							ContentCompression = new ContentCompressionDesc();
+
+						public readonly ContentEncryptionDesc
+							ContentEncryption = new ContentEncryptionDesc();
+
+						public sealed class ContentCompressionDesc : MasterElementDescriptor
+						{
+							internal ContentCompressionDesc() : base(0x5034) { }
+
+							public readonly ElementDescriptor
+								ContentCompAlgo = Uint(0x4254),
+								ContentCompSettings = Binary(0x4255);
+						}
+						public sealed class ContentEncryptionDesc : MasterElementDescriptor
+						{
+							internal ContentEncryptionDesc() : base(0x5035) { }
+
+							public readonly ElementDescriptor
+								ContentEncAlgo = Uint(0x47e1),
+								ContentEncKeyID = Binary(0x47e2),
+								ContentSignature = Binary(0x47e3),
+								ContentSigKeyID = Binary(0x47e4),
+								ContentSigAlgo = Uint(0x47e5),
+								ContentSigHashAlgo = Uint(0x47e6);
+
+						}
+					}
+				}
+			}
+		}
+
 
 		/* TODO
 		void elements() {
 		  {
-			// Track
-			Tracks := 1654ae6b container [ card:*; ] {
-			 TrackEntry := ae container [ card:*; ] {
-			   TrackNumber := d7 uint [ range:1..; ]
-			   TrackUID := 73c5 uint [ range:1..; ]
-			   TrackType := 83 uint [ range:1..254; ]
-			   FlagEnabled := b9 uint [ range:0..1; def:1; ]
-			   FlagDefault := 88 uint [ range:0..1; def:1; ]
-			   FlagLacing  := 9c uint [ range:0..1; def:1; ]
-			   MinCache := 6de7 uint [ def:0; ]
-			   MaxCache := 6df8 uint;
-			   DefaultDuration := 23e383 uint [ range:1..; ]
-			   TrackTimecodeScale := 23314f float [ range:>0.0; def:1.0; ]
-			   Name := 536e string;
-			   Language := 22b59c string [ def:"eng"; range:32..126; ]
-			   CodecID := 86 string [ range:32..126; ];
-			   CodecPrivate := 63a2 binary;
-			   CodecName := 258688 string;
-			   CodecSettings := 3a9697 string;
-			   CodecInfoURL := 3b4040 string [ card:*; range:32..126; ]
-			   CodecDownloadURL := 26b240 string [ card:*; range:32..126; ]
-			   CodecDecodeAll := aa uint [ range:0..1; def:1; ]
-			   TrackOverlay := 6fab uint;
-
-			   // Video
-			   Video := e0 container {
-				 FlagInterlaced := 9a uint [ range:0..1; def:0; ]
-				 StereoMode := 53b8 uint [ range:0..3; def:0; ]
-				 PixelWidth := b0 uint [ range:1..; ]
-				 PixelHeight := ba uint [ range:1..; ]
-				 DisplayWidth := 54b0 uint [ def:PixelWidth; ]
-				 DisplayHeight := 54ba uint [ def:PixelHeight; ]
-				 DisplayUnit := 54b2 uint [ def:0; ]
-				 AspectRatioType := 54b3 uint [ def:0; ]
-				 ColourSpace := 2eb524 binary;
-				 GammaValue := 2fb523 float [ range:>0.0; ]
-			   }
-
-			   // Audio
-			   Audio := e1 container {
-				 SamplingFrequency := b5 float [ range:>0.0; def:8000.0; ]
-				 OutputSamplingFrequency := 78b5 float [ range:>0.0;
-														 def:8000.0; ]
-				 Channels := 94 uint [ range:1..; def:1; ]
-				 ChannelPositions := 7d7b binary;
-				 BitDepth := 6264 uint [ range:1..; ]
-			   }
-
-			   // Content Encoding
-			   ContentEncodings := 6d80 container {
-				 ContentEncoding := 6240 container [ card:*; ] {
-				   ContentEncodingOrder := 5031 uint [ def:0; ]
-				   ContentEncodingScope := 5032 uint [ range:1..; def:1; ]
-				   ContentEncodingType := 5033 uint;
-				   ContentCompression := 5034 container {
-					 ContentCompAlgo := 4254 uint [ def:0; ]
-					 ContentCompSettings := 4255 binary;
-				   }
-				   ContentEncryption := 5035 container {
-					 ContentEncAlgo := 47e1 uint [ def:0; ]
-					 ContentEncKeyID := 47e2 binary;
-					 ContentSignature := 47e3 binary;
-					 ContentSigKeyID := 47e4 binary;
-					 ContentSigAlgo := 47e5 uint;
-					 ContentSigHashAlgo := 47e6 uint;
-				   }
-				 }
-			   }
-			 }
-			}
 
 			// Cueing Data
 			Cues := 1c53bb6b container {
