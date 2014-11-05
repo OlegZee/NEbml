@@ -5,6 +5,8 @@ syntax: glob
 thumbs.db
 
 #-- Directories
+.nuget/
+packages/
 build/
 bin/
 obj/

@@ -228,7 +228,7 @@ namespace NEbml.Core
 		/// the element data size is equal to <code>8</code>, then an instance of the <code>Double</code> is returned.
 		/// </summary>
 		/// <returns>the element data as a floating-point number</returns>
-		public unsafe double ReadFloat()
+		public double ReadFloat()
 		{
 			if (_element.HasInvalidIdentifier || _element.Size != _element.Remaining || _element.Type != ElementType.None)
 			{
@@ -245,9 +245,9 @@ namespace NEbml.Core
 			switch (encodedValueSize)
 			{
 				case 4:
-					return *(((float*) &num));
+					return new Union {ulval = num}.fval;
 				case 8:
-					return *(((double*) &num));
+					return new Union { ulval = num }.dval;
 				default:
 					throw new EbmlDataFormatException("Incorrect float length");
 			}

@@ -129,9 +129,9 @@ namespace NEbml.Core
 		/// <param name="elementId"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public unsafe int Write(VInt elementId, float value)
+		public int Write(VInt elementId, float value)
 		{
-			var u = *(((UInt32*)&value)); 
+			var u = new Union {fval = value}.uival;
 			return elementId.Write(_stream) + EncodeWidth(4).Write(_stream) + WriteInt(u, 4);
 		}
 
@@ -141,9 +141,9 @@ namespace NEbml.Core
 		/// <param name="elementId"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public unsafe int Write(VInt elementId, double value)
+		public int Write(VInt elementId, double value)
 		{
-			var u = *(((UInt64*)&value)); 
+			var u = new Union { dval = value }.ulval;
 			return elementId.Write(_stream) + EncodeWidth(8).Write(_stream) + WriteUInt(u, 8);
 		}
 
@@ -222,7 +222,7 @@ namespace NEbml.Core
 
 		private int WriteInt(Int64 value, uint length)
 		{
-			if(length <0 || length > 8) throw new ArgumentOutOfRangeException("length");
+			if(length > 8) throw new ArgumentOutOfRangeException("length");
 			if (value == 0 && length == 0) return 0;
 
 			var buffer = new byte[length];
@@ -238,7 +238,7 @@ namespace NEbml.Core
 
 		private int WriteUInt(UInt64 value, uint length)
 		{
-			if (length < 0 || length > 8) throw new ArgumentOutOfRangeException("length");
+			if (length > 8) throw new ArgumentOutOfRangeException("length");
 			if (value == 0 && length == 0) return 0;
 
 			var buffer = new byte[length];
