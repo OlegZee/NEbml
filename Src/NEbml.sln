@@ -3,7 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Supplementary", "Supplementary", "{E04FAEF2-DE81-416F-8E0E-8172178962E7}"
 	ProjectSection(SolutionItems) = preProject
-		..\.hgignore = ..\.hgignore
+		..\.gitignore = ..\.gitignore
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MkvTitleEdit", "MkvTitleEdit\MkvTitleEdit.csproj", "{F2B2D694-3F87-4578-B36E-8FAB7D63806D}"

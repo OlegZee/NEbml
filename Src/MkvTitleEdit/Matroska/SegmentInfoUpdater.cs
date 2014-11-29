@@ -41,22 +41,6 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 		private byte[] _oldSegmentInfoData = null;
 
-		/// <summary>
-		/// Initializes a new instance of the SegmentInfoUpdater class
-		/// </summary>
-		public SegmentInfoUpdater()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the SegmentInfoUpdater class
-		/// </summary>
-		/// <param name="file"></param>
-		public SegmentInfoUpdater(FileInfo file)
-		{
-			Open(file);
-		}
-
 		public void Dispose()
 		{
 			Close();

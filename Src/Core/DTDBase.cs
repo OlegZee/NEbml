@@ -95,14 +95,14 @@ namespace NEbml.Core
 		{
 			internal EBMLDesc(long id) : base(id) { }
 
-			public readonly ElementDescriptor
-				EBMLVersion = Uint(0x4286),
-				EBMLReadVersion = Uint(0x42f7),
-				EBMLMaxIDLength = Uint(0x42f2),
-				EBMLMaxSizeLength = Uint(0x42f3),
-				DocType = Ascii(0x4282),
-				DocTypeVersion = Uint(0x4287),
-				DocTypeReadVersion = Uint(0x4285);
+			public static readonly ElementDescriptor
+				EBMLVersion          = Uint(0x4286).Named("EBMLVersion"),
+				EBMLReadVersion      = Uint(0x42f7).Named("EBMLReadVersion"),
+				EBMLMaxIDLength      = Uint(0x42f2),
+				EBMLMaxSizeLength    = Uint(0x42f3),
+				DocType              = Ascii(0x4282).Named("DocType"),
+				DocTypeVersion       = Uint(0x4287).Named("DocTypeVersion"),
+				DocTypeReadVersion   = Uint(0x4285).Named("DocTypeReadVersion");
 		}
 
 		public sealed class SignatureSlotDesc : MasterElementDescriptor

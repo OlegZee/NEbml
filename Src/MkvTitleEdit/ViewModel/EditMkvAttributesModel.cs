@@ -121,8 +121,9 @@ namespace NEbml.MkvTitleEdit.ViewModel
 						}
 					}
 
-					using (var upd = new SegmentInfoUpdater(file))
+					using (var upd = new SegmentInfoUpdater())
 					{
+						upd.Open(file);
 						upd.Title = entry.Title;
 						upd.Write();
 					}

@@ -24,6 +24,9 @@ using NEbml.Core;
 
 namespace NEbml.MkvTitleEdit.Matroska
 {
+	/// <summary>
+	/// Matroska DTD. See http://matroska.org/technical/specs/rfc/index.html
+	/// </summary>
 	public class MatroskaDtd : DTDBase
 	{
 		private MatroskaDtd() { }
@@ -177,9 +180,9 @@ namespace NEbml.MkvTitleEdit.Matroska
 				{ }
 
 				public readonly ElementDescriptor
-					TrackNumber = Uint(0xd7), // [ range:1..; ]
+					TrackNumber = Uint(0xd7).Named("Track#"), // [ range:1..; ]
 					TrackUID = Uint(0x73c5),  // [ range:1..; ]
-					TrackType = Uint(0x83),   // [ range:1..254; ]
+					TrackType = Uint(0x83).Named("TrackType"),   // [ range:1..254; ]
 					FlagEnabled = Uint(0xb9), // [ range:0..1; def:1; ]
 					FlagDefault = Uint(0x88), // [ range:0..1; def:1; ]
 					FlagLacing = Uint(0x9c),  // [ range:0..1; def:1; ]
@@ -187,11 +190,11 @@ namespace NEbml.MkvTitleEdit.Matroska
 					MaxCache = Uint(0x6df8),
 					DefaultDuration = Uint(0x23e383),     //  uint [ range:1..; ]
 					TrackTimecodeScale = Float(0x23314f), //  [ range:>0.0; def:1.0; ]
-					Name = Utf8(0x536e),
-					Language = Ascii(0x22b59c),           //  [ def:"eng"; ]
+					Name = Utf8(0x536e).Named("Name"),
+					Language = Ascii(0x22b59c).Named("Language"),           //  [ def:"eng"; ]
 					CodecID = Ascii(0x86),
 					CodecPrivate = Binary(0x63a2),
-					CodecName = Utf8(0x258688),
+					CodecName = Utf8(0x258688).Named("CodecName"),
 					CodecSettings = Utf8(0x3a9697),
 					CodecInfoURL = Ascii(0x3b4040),
 					CodecDownloadURL = Ascii(0x26b240),

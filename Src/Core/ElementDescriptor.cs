@@ -108,5 +108,15 @@ namespace NEbml.Core
 			buffer.Append(')');
 			return buffer.ToString();
 		}
+
+		/// <summary>
+		/// Returns a new descriptor with updated name.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public ElementDescriptor Named(string name)
+		{
+			return new ElementDescriptor(Identifier, name, Type);
+		}
 	}
 }
