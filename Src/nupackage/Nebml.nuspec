@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>NEbml</id>
+    <version>0.1.0</version>
+    <authors>OlegZee</authors>
+    <owners>OlegZee</owners>
+    <projectUrl>https://github.com/OlegZee/NEbml</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Lightweight EBML binary format reader/writer</description>
+    <releaseNotes>Initial draft release.</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>EBML MKV Matroska</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>

@@ -92,6 +92,12 @@ namespace NEbml.Core
 
 		#region constructors
 
+		/// <summary>
+		/// Returns VInt value with specific encoded value with a specific length.
+		/// </summary>
+		/// <param name="value">(Size) value to be encoded.</param>
+		/// <param name="length">VInt length to store value to.</param>
+		/// <returns></returns>
 		public static VInt EncodeSize(ulong value, int length)
 		{
 			if (value > MaxSizeValue)
