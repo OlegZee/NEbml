@@ -81,6 +81,7 @@
     <Compile Include="EbmlReader.cs" />
     <Compile Include="MasterBlockWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamExtensions.cs" />
     <Compile Include="Tests\EbmlWriterTests.cs" />
     <Compile Include="Tests\VIntTests.cs" />
     <Compile Include="Union.cs" />

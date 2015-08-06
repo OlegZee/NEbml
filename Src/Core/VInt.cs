@@ -196,7 +196,7 @@ namespace NEbml.Core
 		{
 			buffer = buffer ?? new byte[maxLength];
 
-			if (source.Read(buffer, 0, 1) == 0)
+			if (source.ReadFully(buffer, 0, 1) == 0)
 			{
 				throw new EndOfStreamException();
 			}
@@ -212,7 +212,7 @@ namespace NEbml.Core
 			if (extraBytes + 1 > maxLength)
 				throw new EbmlDataFormatException(string.Format("Expected VInt with a max length of {0}. Got {1}", maxLength, extraBytes + 1));
 
-			if (source.Read(buffer, 1, extraBytes) != extraBytes)
+			if (source.ReadFully(buffer, 1, extraBytes) != extraBytes)
 			{
 				throw new EndOfStreamException();
 			}
