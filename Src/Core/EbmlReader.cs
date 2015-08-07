@@ -311,7 +311,7 @@ namespace NEbml.Core
 			{
 				return -1;
 			}
-			int r = _source.Read(buffer, offset, (int) Math.Min(_element.Remaining, length));
+			int r = _source.ReadFully(buffer, offset, (int) Math.Min(_element.Remaining, length));
 			if (r < 0)
 			{
 				throw new EndOfStreamException();
@@ -367,7 +367,7 @@ namespace NEbml.Core
 			}
 			while (length > 0)
 			{
-				int r = _source.Read(buffer, offset, length);
+				int r = _source.ReadFully(buffer, offset, length);
 				if (r < 0)
 				{
 					throw new EndOfStreamException();
@@ -401,7 +401,7 @@ namespace NEbml.Core
 			while (length > 0L)
 			{
 				var buffer = GetSharedBuffer(2048);
-				var r = _source.Read(buffer, 0, (int) Math.Min(length, buffer.Length));
+				var r = _source.ReadFully(buffer, 0, (int) Math.Min(length, buffer.Length));
 				if (r < 0)
 				{
 					throw new EndOfStreamException();
