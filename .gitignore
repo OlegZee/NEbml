@@ -18,6 +18,7 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+[Ss]rc/nupackage/lib/
 
 # Roslyn cache directories
 *.ide/
