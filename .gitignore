@@ -20,8 +20,6 @@ bld/
 [Oo]bj/
 [Ss]rc/nupackage/lib/
 
-# Roslyn cache directories
-*.ide/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -31,8 +29,6 @@ bld/
 *.VisualState.xml
 TestResult.xml
 
-
-
 # Guidance Automation Toolkit
 *.gpState
 
@@ -40,20 +36,6 @@ TestResult.xml
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
-
-
-
-
-# Click-Once directory
-publish/
-
-# Publish Web Output
-*.[Pp]ublish.xml
-*.azurePubxml
-# TODO: Comment the next line if you want to checkin your web deploy settings 
-# but database connection strings (with potential passwords) will be unencrypted
-*.pubxml
-*.publishproj
 
 # NuGet Packages
 *.nupkg
@@ -64,12 +46,6 @@ publish/
 # If using the old MSBuild-Integrated Package Restore, uncomment this:
 #!**/packages/repositories.config
 
-# Windows Azure Build Output
-csx/
-*.build.csdef
-
-
-
 # Backup & report files from converting an old project file
 # to a newer Visual Studio version. Backup files are not needed,
 # because we have git ;-)
@@ -78,8 +54,4 @@ Backup*/
 UpgradeLog*.XML
 UpgradeLog*.htm
 
-
-
-# Microsoft Fakes
-FakesAssemblies/
 !/.paket/paket.bootstrapper.exe
