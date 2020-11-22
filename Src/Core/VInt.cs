@@ -29,7 +29,7 @@ namespace NEbml.Core
 	/// <summary>
 	/// Variable size integer implementation as of http://www.matroska.org/technical/specs/rfc/index.html
 	/// </summary>
-	public struct VInt
+	public readonly struct VInt
 	{
 		private readonly sbyte _length;
 
@@ -66,8 +66,14 @@ namespace NEbml.Core
 			}
 		}
 
+		/// <summary>
+		/// Gets the encoded value.
+		/// </summary>
 		public ulong EncodedValue { get; }
 
+		/// <summary>
+		/// Gets the encoded value's length
+		/// </summary>
 		public int Length => _length;
 
 		public static implicit operator ulong?(VInt value)

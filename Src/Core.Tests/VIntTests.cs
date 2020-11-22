@@ -21,9 +21,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * */
 
 using System;
+using NEbml.Core;
 using NUnit.Framework;
 
-namespace NEbml.Core.Tests
+namespace Core.Tests
 {
 	/// <summary>
 	/// Unit tests for VInt class
@@ -31,12 +32,12 @@ namespace NEbml.Core.Tests
 	[TestFixture]
 	public class VIntTests
 	{
-		[TestCase(0, 1, ExpectedResult = 0x80)]
-		[TestCase(1, 1, ExpectedResult = 0x81)]
-		[TestCase(126, 1, ExpectedResult = 0xfe)]
-		[TestCase(127, 2, ExpectedResult = 0x407f)]
-		[TestCase(128, 2, ExpectedResult = 0x4080)]
-		[TestCase(0xdeffad, 4, ExpectedResult = 0x10deffad)]
+		[TestCase(0, 1, ExpectedResult = 0x80ul)]
+		[TestCase(1, 1, ExpectedResult = 0x81ul)]
+		[TestCase(126, 1, ExpectedResult = 0xfeul)]
+		[TestCase(127, 2, ExpectedResult = 0x407ful)]
+		[TestCase(128, 2, ExpectedResult = 0x4080ul)]
+		[TestCase(0xdeffad, 4, ExpectedResult = 0x10deffadul)]
 		public ulong EncodeSize(int value, int expectedLength)
 		{
 			var v = VInt.EncodeSize((ulong)value);
@@ -45,11 +46,11 @@ namespace NEbml.Core.Tests
 			return v.EncodedValue;
 		}
 
-		[TestCase(0, 1, ExpectedResult = 0x80)]
-		[TestCase(0, 2, ExpectedResult = 0x4000)]
-		[TestCase(0, 3, ExpectedResult = 0x200000)]
-		[TestCase(0, 4, ExpectedResult = 0x10000000)]
-		[TestCase(127, 2, ExpectedResult = 0x407f)]
+		[TestCase(0, 1, ExpectedResult = 0x80ul)]
+		[TestCase(0, 2, ExpectedResult = 0x4000ul)]
+		[TestCase(0, 3, ExpectedResult = 0x200000ul)]
+		[TestCase(0, 4, ExpectedResult = 0x10000000ul)]
+		[TestCase(127, 2, ExpectedResult = 0x407ful)]
 		public ulong EncodeSizeWithLength(int value, int length)
 		{
 			var v = VInt.EncodeSize((ulong)value, length);
@@ -63,14 +64,14 @@ namespace NEbml.Core.Tests
 			Assert.Throws<ArgumentException>(() => VInt.EncodeSize((ulong)value, length));
 		}
 
-		[TestCase(1, ExpectedResult = 0xffL)]
-		[TestCase(2, ExpectedResult = 0x7fffL)]
-		[TestCase(3, ExpectedResult = 0x3fffffL)]
-		[TestCase(4, ExpectedResult = 0x1fffffffL)]
-		[TestCase(5, ExpectedResult = 0x0fffffffffL)]
-		[TestCase(6, ExpectedResult = 0x07ffffffffffL)]
-		[TestCase(7, ExpectedResult = 0x03ffffffffffffL)]
-		[TestCase(8, ExpectedResult = 0x01ffffffffffffffL)]
+		[TestCase(1, ExpectedResult = 0xfful)]
+		[TestCase(2, ExpectedResult = 0x7ffful)]
+		[TestCase(3, ExpectedResult = 0x3ffffful)]
+		[TestCase(4, ExpectedResult = 0x1ffffffful)]
+		[TestCase(5, ExpectedResult = 0x0ffffffffful)]
+		[TestCase(6, ExpectedResult = 0x07fffffffffful)]
+		[TestCase(7, ExpectedResult = 0x03fffffffffffful)]
+		[TestCase(8, ExpectedResult = 0x01fffffffffffffful)]
 		public ulong CreatesReserved(int length)
 		{
 			var size = VInt.UnknownSize(length);
@@ -89,12 +90,12 @@ namespace NEbml.Core.Tests
 			Assert.Throws<ArgumentOutOfRangeException>(() => VInt.UnknownSize(length));
 		}
 
-		[TestCase(0x80ul, ExpectedResult = 0)]
-		[TestCase(0xaful, ExpectedResult = 0x2f)]
-		[TestCase(0x40FFul, ExpectedResult = 0xFF)]
-		[TestCase(0x2000FFul, ExpectedResult = 0xFF)]
-		[TestCase(0x100000FFul, ExpectedResult = 0xFF)]
-		[TestCase(0x1f1020FFul, ExpectedResult = 0xF1020FF)]
+		[TestCase(0x80ul, ExpectedResult = 0ul)]
+		[TestCase(0xaful, ExpectedResult = 0x2ful)]
+		[TestCase(0x40FFul, ExpectedResult = 0xFFul)]
+		[TestCase(0x2000FFul, ExpectedResult = 0xFFul)]
+		[TestCase(0x100000FFul, ExpectedResult = 0xFFul)]
+		[TestCase(0x1f1020FFul, ExpectedResult = 0xF1020FFul)]
 		public ulong CreatesFromEncodedValue(ulong encodedValue)
 		{
 			return VInt.FromEncoded(encodedValue).Value;

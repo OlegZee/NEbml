@@ -22,9 +22,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
+using NEbml.Core;
 using NUnit.Framework;
 
-namespace NEbml.Core.Tests
+namespace Core.Tests
 {
 	[TestFixture]
 	public class EbmlWriterTests

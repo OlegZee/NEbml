@@ -9,6 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Src\Core\Core.cspro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "Src\Core.Tests\Core.Tests.csproj", "{E0349793-FD46-49FB-B9B7-DEB33499CC21}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build scripts etc", "Build scripts etc", "{8F19D34B-4C55-441B-AFA6-CDDCEC594EC0}"
+ProjectSection(SolutionItems) = preProject
+	build.fsx = build.fsx
+	build.sh = build.sh
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
