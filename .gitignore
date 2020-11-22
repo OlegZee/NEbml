@@ -8,6 +8,7 @@
 .nuget/
 .vscode/
 .ionide/
+.idea/
 
 # Build results
 [Dd]ebug/
