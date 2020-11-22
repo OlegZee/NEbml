@@ -31,15 +31,14 @@ namespace NEbml.Core
 	/// </summary>
 	public struct VInt
 	{
-		private readonly ulong _encodedValue;
 		private readonly sbyte _length;
 
 		private VInt(ulong encodedValue, int length)
 		{
 			if(length < 1 || length > 8)
-				throw new ArgumentOutOfRangeException("length");
+				throw new ArgumentOutOfRangeException(nameof(length));
 
-			_encodedValue = encodedValue;
+			EncodedValue = encodedValue;
 			_length = (sbyte)length;
 		}
 
@@ -48,18 +47,12 @@ namespace NEbml.Core
 		/// <summary>
 		/// Gets the value
 		/// </summary>
-		public ulong Value
-		{
-			get { return EncodedValue & DataBitsMask[_length]; }
-		}
+		public ulong Value => EncodedValue & DataBitsMask[_length];
 
 		/// <summary>
 		/// Gets true if value is reserved (i.e. all data bits are zeros or 1's)
 		/// </summary>
-		public bool IsReserved
-		{
-			get { return Value == DataBitsMask[_length]; }
-		}
+		public bool IsReserved => Value == DataBitsMask[_length];
 
 		/// <summary>
 		/// Gets true if value is correct identifier
@@ -73,15 +66,9 @@ namespace NEbml.Core
 			}
 		}
 
-		public ulong EncodedValue
-		{
-			get { return _encodedValue; }
-		}
+		public ulong EncodedValue { get; }
 
-		public int Length
-		{
-			get { return _length; }
-		}
+		public int Length => _length;
 
 		public static implicit operator ulong?(VInt value)
 		{
@@ -98,14 +85,14 @@ namespace NEbml.Core
 		/// <param name="value">(Size) value to be encoded.</param>
 		/// <param name="length">VInt length to store value to.</param>
 		/// <returns></returns>
-		public static VInt EncodeSize(ulong value, int length)
+		public static VInt EncodeSize(ulong value, int length = 0)
 		{
 			if (value > MaxSizeValue)
-				throw new ArgumentException("Value exceed VInt capacity", "value");
+				throw new ArgumentException("Value exceed VInt capacity", nameof(value));
 			if (length < 0 || length > 8)
-				throw new ArgumentOutOfRangeException("length");
+				throw new ArgumentOutOfRangeException(nameof(length));
 			if (length > 0 && DataBitsMask[length] <= value)
-				throw new ArgumentException("Specified width is not sufficient to encode value", "value");
+				throw new ArgumentException("Specified width is not sufficient to encode value", nameof(value));
 
 			if(length == 0)
 			{
@@ -117,16 +104,6 @@ namespace NEbml.Core
 		}
 
 		/// <summary>
-		/// Encodes specified value according to size encoding rules in shortest form
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static VInt EncodeSize(ulong value)
-		{
-			return EncodeSize(value, 0);
-		}
-
-		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="elementId"></param>
@@ -134,7 +111,7 @@ namespace NEbml.Core
 		public static VInt MakeId(uint elementId)
 		{
 			if (elementId > MaxElementIdValue)
-				throw new ArgumentException("Value exceed VInt capacity", "elementId");
+				throw new ArgumentException("Value exceed VInt capacity", nameof(elementId));
 
 			var id = EncodeSize(elementId);
 			Debug.Assert(id._length <= 4);
@@ -149,7 +126,7 @@ namespace NEbml.Core
 		public static VInt UnknownSize(int length)
 		{
 			if (length < 0 || length > 8)
-				throw new ArgumentOutOfRangeException("length");
+				throw new ArgumentOutOfRangeException(nameof(length));
 
 			var sizeMarker = 1UL << (7 * length);
 			var dataBits   = (1UL << (7 * length)) - 1;
@@ -164,7 +141,7 @@ namespace NEbml.Core
 		public static VInt FromEncoded(ulong encodedValue)
 		{
 			if (encodedValue == 0)
-				throw new ArgumentException("Zero is not a correct value", "encodedValue");
+				throw new ArgumentException("Zero is not a correct value", nameof(encodedValue));
 
 			var mostSignificantOctetIndex = 7;
 			while ((encodedValue >> mostSignificantOctetIndex * 8) == 0x0)
@@ -176,7 +153,7 @@ namespace NEbml.Core
 			var extraBytes = (marker >> 4 > 0) ? ExtraBytesSize[marker >> 4] : 4 + ExtraBytesSize[marker];
 
 			if (extraBytes != mostSignificantOctetIndex)
-				throw new ArgumentException("Width marker does not match its position", "encodedValue");
+				throw new ArgumentException("Width marker does not match its position", nameof(encodedValue));
 
 			return new VInt(encodedValue, extraBytes + 1);
 		}
@@ -202,7 +179,7 @@ namespace NEbml.Core
 			}
 
 			if(buffer[0] == 0)
-				throw new EbmlDataFormatException("Length bigger than 8 are not supported");
+				throw new EbmlDataFormatException("Length bigger than 8 is not supported");
 			// TODO handle EBMLMaxSizeWidth
 
 			var extraBytes = (buffer[0] & 0xf0) != 0 
@@ -210,7 +187,7 @@ namespace NEbml.Core
 				: 4 + ExtraBytesSize[buffer[0]];
 
 			if (extraBytes + 1 > maxLength)
-				throw new EbmlDataFormatException(string.Format("Expected VInt with a max length of {0}. Got {1}", maxLength, extraBytes + 1));
+				throw new EbmlDataFormatException($"Expected VInt with a max length of {maxLength}. Got {extraBytes + 1}");
 
 			if (source.ReadFully(buffer, 1, extraBytes) != extraBytes)
 			{
@@ -231,7 +208,7 @@ namespace NEbml.Core
 		/// <param name="stream"></param>
 		public int Write(Stream stream)
 		{
-			if (stream == null) throw new ArgumentNullException("stream");
+			if (stream == null) throw new ArgumentNullException(nameof(stream));
 
 			var buffer = new byte[Length];
 
@@ -279,27 +256,26 @@ namespace NEbml.Core
 		{
 			unchecked
 			{
-				return (_encodedValue.GetHashCode()*397) ^ _length.GetHashCode();
+				return (EncodedValue.GetHashCode()*397) ^ _length.GetHashCode();
 			}
 		}
 
-		public bool Equals(VInt other)
+		private bool Equals(VInt other)
 		{
-			return other._encodedValue == _encodedValue && other._length == _length;
+			return other.EncodedValue == EncodedValue && other._length == _length;
 		}
 
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
-			if (obj.GetType() != typeof (VInt)) return false;
-			return Equals((VInt) obj);
+			return obj is VInt i && Equals(i);
 		}
 
 		#endregion
 
 		public override string ToString()
 		{
-			return string.Format("VInt, value = {0}, length = {1}, encoded = {2:X}", Value, Length, EncodedValue);
+			return $"VInt, value = {Value}, length = {Length}, encoded = {EncodedValue:X}";
 		}
 	}
 }

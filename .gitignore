@@ -6,6 +6,8 @@
 *.user
 *.sln.docstates
 .nuget/
+.vscode/
+.ionide/
 
 # Build results
 [Dd]ebug/

@@ -40,8 +40,7 @@ namespace NEbml.Core
 		/// <param name="stream"></param>
 		public EbmlWriter(Stream stream)
 		{
-			if (stream == null) throw new ArgumentNullException("stream");
-			_stream = stream;
+			_stream = stream ?? throw new ArgumentNullException(nameof(stream));
 		}
 
 		/// <summary>
@@ -79,7 +78,7 @@ namespace NEbml.Core
 		/// <param name="elementId"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public int Write(VInt elementId, Int64 value)
+		public int Write(VInt elementId, long value)
 		{
 			var length = value == 0 ? 0u : 1u;
 			unchecked
@@ -100,7 +99,7 @@ namespace NEbml.Core
 		/// <param name="elementId"></param>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public int Write(VInt elementId, UInt64 value)
+		public int Write(VInt elementId, ulong value)
 		{
 			var length = 0u;
 			for (var mask = UInt64.MaxValue; (value & mask) != 0 && length < 8; mask <<= 8)
@@ -181,7 +180,7 @@ namespace NEbml.Core
 		/// <returns></returns>
 		public int WriteAscii(VInt elementId, string value)
 		{
-			if (value == null) throw new ArgumentNullException("value");
+			if (value == null) throw new ArgumentNullException(nameof(value));
 			var buffer = string.IsNullOrEmpty(value) ? new byte[0] : Encoding.ASCII.GetBytes(value);
 			return Write(elementId, buffer, 0, buffer.Length);
 		}
@@ -194,7 +193,7 @@ namespace NEbml.Core
 		/// <returns></returns>
 		public int WriteUtf(VInt elementId, string value)
 		{
-			if (value == null) throw new ArgumentNullException("value");
+			if (value == null) throw new ArgumentNullException(nameof(value));
 			if (!value.IsNormalized(NormalizationForm.FormC))
 			{
 				value = value.Normalize(NormalizationForm.FormC);
@@ -222,7 +221,7 @@ namespace NEbml.Core
 
 		private int WriteInt(Int64 value, uint length)
 		{
-			if(length > 8) throw new ArgumentOutOfRangeException("length");
+			if(length > 8) throw new ArgumentOutOfRangeException(nameof(length));
 			if (value == 0 && length == 0) return 0;
 
 			var buffer = new byte[length];
@@ -238,7 +237,7 @@ namespace NEbml.Core
 
 		private int WriteUInt(UInt64 value, uint length)
 		{
-			if (length > 8) throw new ArgumentOutOfRangeException("length");
+			if (length > 8) throw new ArgumentOutOfRangeException(nameof(length));
 			if (value == 0 && length == 0) return 0;
 
 			var buffer = new byte[length];

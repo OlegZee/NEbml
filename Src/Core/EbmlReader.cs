@@ -38,7 +38,6 @@ namespace NEbml.Core
 		private readonly Stream _source;
 		private Element _container;
 		private Element _element;
-		private long _elementPosition;
 		private byte[] _sharedBuffer;
 
 		/// <summary>
@@ -59,10 +58,9 @@ namespace NEbml.Core
 		/// <exception cref="ArgumentNullException">if <code>size</code> is negative</exception>
 		public EbmlReader(Stream source, long size)
 		{
-			if (source == null) throw new ArgumentNullException("source");
 			if (size < 0L) throw new ArgumentException("size is negative");
 
-			_source = source;
+			_source = source ?? throw new ArgumentNullException(nameof(source));
 			_containers = new Stack<Element>();
 			_container = new Element(VInt.UnknownSize(2), size, ElementType.MasterElement);
 			_element = Element.Empty;
@@ -87,7 +85,7 @@ namespace NEbml.Core
 				return false;
 			}
 
-			_elementPosition = _source.Position;
+			ElementPosition = _source.Position;
 			var identifier = ReadVarInt(4);
 
 			if (identifier.IsReserved)
@@ -137,10 +135,7 @@ namespace NEbml.Core
 		/// <summary>
 		/// Gets starting position in file for current element
 		/// </summary>
-		public long ElementPosition
-		{
-			get { return _elementPosition; }
-		}
+		public long ElementPosition { get; private set; }
 
 		/// <summary>
 		/// Instructs the reader to parse the current element data as sub-elements. The current container 
@@ -279,7 +274,7 @@ namespace NEbml.Core
 		/// Reads the element data as an ASCII string.
 		/// </summary>
 		/// <returns>the element data as an ASCII string</returns>
-		public String ReadAscii()
+		public string ReadAscii()
 		{
 			return ReadString(Encoding.ASCII);
 		}
@@ -288,7 +283,7 @@ namespace NEbml.Core
 		/// Reads the element data as an UTF8 string.
 		/// </summary>
 		/// <returns>the element data as an UTF8 string</returns>
-		public String ReadUtf()
+		public string ReadUtf()
 		{
 			return ReadString(Encoding.UTF8);
 		}
@@ -311,7 +306,7 @@ namespace NEbml.Core
 			{
 				return -1;
 			}
-			int r = _source.ReadFully(buffer, offset, (int) Math.Min(_element.Remaining, length));
+			var r = _source.ReadFully(buffer, offset, (int) Math.Min(_element.Remaining, length));
 			if (r < 0)
 			{
 				throw new EndOfStreamException();
@@ -466,7 +461,7 @@ namespace NEbml.Core
 		/// </summary>
 		/// <param name="decoder">the name of the charset to be used to decode the bytes</param>
 		/// <returns>the element data as a string</returns>
-		private String ReadString(Encoding decoder)
+		private string ReadString(Encoding decoder)
 		{
 			if (_element.HasInvalidIdentifier || _element.Size != _element.Remaining || _element.Type != ElementType.None)
 			{
@@ -499,15 +494,9 @@ namespace NEbml.Core
 			public readonly VInt Identifier;
 			public readonly long Size;
 
-			public bool IsEmpty
-			{
-				get { return !Identifier.IsValidIdentifier && Size == 0 && Type == ElementType.None; }
-			}
+			public bool IsEmpty => !Identifier.IsValidIdentifier && Size == 0 && Type == ElementType.None;
 
-			public bool HasInvalidIdentifier
-			{
-				get { return !Identifier.IsValidIdentifier; }
-			}
+			public bool HasInvalidIdentifier => !Identifier.IsValidIdentifier;
 
 			public long Remaining;
 
