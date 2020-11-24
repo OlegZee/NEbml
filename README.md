@@ -11,12 +11,25 @@ Unlike XML the EBML is very efficient in space and performance terms.
 
 ### How do I get set up? ###
 
-* use nuget `Install-Package NEbml`
-* Binaries are build for .NET 3.5 but there're no difficulties adapting the code to .NET 2.0
-* Use Nunit to run the unit tests. Unit tests are compiled only for DEBUG configuration.
+* reference `NEbml` package from nuget
+* Package contains binaries for .NET 4.6.1 and NetStandard 2.0 platforms
 
 ### Contribution guidelines ###
 
 * Writing tests
 * Code review
 * Other guidelines
+
+### Publishing new version (note to myself)
+
+```cmd
+REM build and test a package
+dotnet fsi build.fsx -- clean build test
+
+REM set env vars:
+set VER=0.9.0
+set NUGET_KEY=111112222233333
+
+REM pack and push the package
+dotnet fsi build.fsx -- push
+```

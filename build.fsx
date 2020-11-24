@@ -17,10 +17,12 @@ let shellx cmd folder =
 
 let (=?) value deflt = match value with |Some v -> v |None -> deflt
 
-let nuget_exe = "packages/NuGet.CommandLine/tools/NuGet.exe"
-let DEF_VER = "0.0.1"
+let getVersion () = recipe {
+    let! ver = getEnv("VER")
+    return ver =? "0.0.1"
+}
 
-do xake {ExecOptions.Default with FileLog = "build.log"; ConLogLevel = Verbosity.Loud } {
+do xake {ExecOptions.Default with FileLog = "build.log"; ConLogLevel = Loud } {
 
     rules [
         "main"  <== ["build"; "test"; "nuget-pack"]
@@ -31,8 +33,8 @@ do xake {ExecOptions.Default with FileLog = "build.log"; ConLogLevel = Verbosity
         }
 
         "build" ..> recipe {
-            let! ver = getEnv("VER")
-            do! "Src/Core" |> shellx $"dotnet build -c Release -p:Version={ver =? DEF_VER}"
+            let! ver = getVersion()
+            do! "Src/Core" |> shellx $"dotnet build -c Release -p:Version={ver}"
         }
 
         "test" ..> recipe {
@@ -43,20 +45,19 @@ do xake {ExecOptions.Default with FileLog = "build.log"; ConLogLevel = Verbosity
         }
 
         "pack" ..> recipe {
-            let! ver = getEnv("VER")
-            do! "Src/Core" |> shellx $"dotnet pack -c Release -p:Version={ver =? DEF_VER}"
+            let! ver = getVersion()
+            do! "Src/Core" |> shellx $"dotnet pack -c Release -p:Version={ver}"
         }
 
-        "nuget-push" => action {
-            do! need ["nuget-pack"]
+        "push" => action {
+            do! need ["pack"]
 
-            let! ver = getEnv("VER")
-            let package_name = sprintf "NEbml.Core.%s.nupkg" (ver =? DEF_VER)
+            let! ver = getVersion()
+            let! nuget_key_var = getEnv("NUGET_KEY")
 
-            let! nuget_key = getEnv("NUGET_KEY")
-            // let! exec_code = systemClr nuget_exe ["push"; "nupkg" </> package_name; nuget_key =? ""]
-            // if exec_code <> 0 then failwith ""
-            return ()
+            let package_name = $"NEbml.{ver}.nupkg"
+            let nuget_key = nuget_key_var =? ""
+            do! "Src/Core/bin/Release" |> shellx $"dotnet nuget push {package_name} --api-key {nuget_key} --source https://api.nuget.org/v3/index.json"
         }
     ]
 
