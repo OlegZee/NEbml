@@ -6,6 +6,9 @@
 *.user
 *.sln.docstates
 .nuget/
+.vscode/
+.ionide/
+.idea/
 
 # Build results
 [Dd]ebug/
@@ -55,3 +58,5 @@ UpgradeLog*.XML
 UpgradeLog*.htm
 
 !/.paket/paket.bootstrapper.exe
+.xake
+build.log
