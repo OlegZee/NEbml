@@ -22,101 +22,101 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace NEbml.Core
 {
-    /// <summary>
-    /// Root class for Ebml type schema
-    /// </summary>
-    public class DTDBase
-    {
-        protected static ElementDescriptor Container(long id, string name = "")
-        {
-            return new ElementDescriptor(id, name, ElementType.MasterElement);
-        }
+	/// <summary>
+	/// Root class for Ebml type schema
+	/// </summary>
+	public class DTDBase
+	{
+		protected static ElementDescriptor Container(long id, string name = "")
+		{
+			return new ElementDescriptor(id, name, ElementType.MasterElement);
+		}
 
-        protected static ElementDescriptor Binary(long id, string name = "")
-        {
-            return new ElementDescriptor(id, name, ElementType.Binary);
-        }
+		protected static ElementDescriptor Binary(long id, string name = "")
+		{
+			return new ElementDescriptor(id, name, ElementType.Binary);
+		}
 
-        protected static ElementDescriptor Uint(long id, string name = "")
-        {
-            return new ElementDescriptor(id, name, ElementType.UnsignedInteger);
-        }
+		protected static ElementDescriptor Uint(long id, string name = "")
+		{
+			return new ElementDescriptor(id, name, ElementType.UnsignedInteger);
+		}
 
-        protected static ElementDescriptor Int(long id, string name = "")
-        {
-            return new ElementDescriptor(id, name, ElementType.SignedInteger);
-        }
+		protected static ElementDescriptor Int(long id, string name = "")
+		{
+			return new ElementDescriptor(id, name, ElementType.SignedInteger);
+		}
 
-        protected static ElementDescriptor Ascii(long id, string name = "")
-        {
-            return new ElementDescriptor(id, name, ElementType.AsciiString);
-        }
+		protected static ElementDescriptor Ascii(long id, string name = "")
+		{
+			return new ElementDescriptor(id, name, ElementType.AsciiString);
+		}
 
-        protected static ElementDescriptor Utf8(long id, string name = "")
-        {
-            return new ElementDescriptor(id, name, ElementType.Utf8String);
-        }
+		protected static ElementDescriptor Utf8(long id, string name = "")
+		{
+			return new ElementDescriptor(id, name, ElementType.Utf8String);
+		}
 
-        protected static ElementDescriptor Float(long id, string name = "")
-        {
-            return new ElementDescriptor(id, name, ElementType.Float);
-        }
+		protected static ElementDescriptor Float(long id, string name = "")
+		{
+			return new ElementDescriptor(id, name, ElementType.Float);
+		}
 
-        protected static ElementDescriptor Date(long id, string name = "")
-        {
-            return new ElementDescriptor(id, name, ElementType.Date);
-        }
+		protected static ElementDescriptor Date(long id, string name = "")
+		{
+			return new ElementDescriptor(id, name, ElementType.Date);
+		}
 
-        public class MasterElementDescriptor : ElementDescriptor
-        {
-            protected MasterElementDescriptor(long identifier, string name = "") : base(identifier, name, ElementType.MasterElement)
-            {
-            }
-        }
-    }
+		public class MasterElementDescriptor : ElementDescriptor
+		{
+			protected MasterElementDescriptor(long identifier, string name = "") : base(identifier, name, ElementType.MasterElement)
+			{
+			}
+		}
+	}
 
-    /// <summary>
-    /// Appendix C. EBML Standard definitions.
-    /// </summary>
-    public class StandardDtd : DTDBase
-    {
-        private StandardDtd() { }
+	/// <summary>
+	/// Appendix C. EBML Standard definitions.
+	/// </summary>
+	public class StandardDtd : DTDBase
+	{
+		private StandardDtd() { }
 
-        public static readonly ElementDescriptor
-            EBML = new EBMLDesc(0x1a45dfa3, nameof(EBML));
-        public static readonly ElementDescriptor
-            SignatureSlot = new SignatureSlotDesc(0x1b538667, nameof(SignatureSlot));
+		public static readonly ElementDescriptor
+			EBML = new EBMLDesc(0x1a45dfa3, nameof(EBML));
+		public static readonly ElementDescriptor
+			SignatureSlot = new SignatureSlotDesc(0x1b538667, nameof(SignatureSlot));
 
-        public static readonly ElementDescriptor
-            CRC32 = Container(0xc3, nameof(CRC32)),
-            Void = Binary(0xec, nameof(Void));
+		public static readonly ElementDescriptor
+			CRC32 = Container(0xc3, nameof(CRC32)),
+			Void = Binary(0xec, nameof(Void));
 
-        public sealed class EBMLDesc : MasterElementDescriptor
-        {
-            internal EBMLDesc(long id, string name = "") : base(id, name) { }
+		public sealed class EBMLDesc : MasterElementDescriptor
+		{
+			internal EBMLDesc(long id, string name = "") : base(id, name) { }
 
-            public static readonly ElementDescriptor
-                EBMLVersion = Uint(0x4286, nameof(EBMLVersion)),
-                EBMLReadVersion = Uint(0x42f7, nameof(EBMLReadVersion)),
-                EBMLMaxIDLength = Uint(0x42f2, nameof(EBMLMaxIDLength)),
-                EBMLMaxSizeLength = Uint(0x42f3, nameof(EBMLMaxSizeLength)),
-                DocType = Ascii(0x4282, nameof(DocType)),
-                DocTypeVersion = Uint(0x4287, nameof(DocTypeVersion)),
-                DocTypeReadVersion = Uint(0x4285, nameof(DocTypeReadVersion));
-        }
+			public static readonly ElementDescriptor
+				EBMLVersion = Uint(0x4286, nameof(EBMLVersion)),
+				EBMLReadVersion = Uint(0x42f7, nameof(EBMLReadVersion)),
+				EBMLMaxIDLength = Uint(0x42f2, nameof(EBMLMaxIDLength)),
+				EBMLMaxSizeLength = Uint(0x42f3, nameof(EBMLMaxSizeLength)),
+				DocType = Ascii(0x4282, nameof(DocType)),
+				DocTypeVersion = Uint(0x4287, nameof(DocTypeVersion)),
+				DocTypeReadVersion = Uint(0x4285, nameof(DocTypeReadVersion));
+		}
 
-        public sealed class SignatureSlotDesc : MasterElementDescriptor
-        {
-            internal SignatureSlotDesc(long id, string name = "") : base(id, name) { }
+		public sealed class SignatureSlotDesc : MasterElementDescriptor
+		{
+			internal SignatureSlotDesc(long id, string name = "") : base(id, name) { }
 
-            public readonly ElementDescriptor
-                SignatureAlgo = Uint(0x7e8a, nameof(SignatureAlgo)),
-                SignatureHash = Uint(0x7e9a, nameof(SignatureHash)),
-                SignaturePublicKey = Binary(0x7ea5, nameof(SignaturePublicKey)),
-                Signature = Binary(0x7eb5, nameof(Signature)),
-                SignatureElements = Container(0x7e5b, nameof(SignatureElements)),
-                SignatureElementList = Container(0x7e7b, nameof(SignatureElementList)),
-                SignedElement = Binary(0x6532, nameof(SignedElement));
-        }
-    }
+			public readonly ElementDescriptor
+				SignatureAlgo = Uint(0x7e8a, nameof(SignatureAlgo)),
+				SignatureHash = Uint(0x7e9a, nameof(SignatureHash)),
+				SignaturePublicKey = Binary(0x7ea5, nameof(SignaturePublicKey)),
+				Signature = Binary(0x7eb5, nameof(Signature)),
+				SignatureElements = Container(0x7e5b, nameof(SignatureElements)),
+				SignatureElementList = Container(0x7e7b, nameof(SignatureElementList)),
+				SignedElement = Binary(0x6532, nameof(SignedElement));
+		}
+	}
 }
