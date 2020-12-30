@@ -60,3 +60,4 @@ UpgradeLog*.htm
 !/.paket/paket.bootstrapper.exe
 .xake
 build.log
+/.vs
