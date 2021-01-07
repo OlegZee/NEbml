@@ -98,8 +98,8 @@ namespace NEbml.Core
 			public static readonly ElementDescriptor
 				EBMLVersion          = Uint(0x4286).Named("EBMLVersion"),
 				EBMLReadVersion      = Uint(0x42f7).Named("EBMLReadVersion"),
-				EBMLMaxIDLength      = Uint(0x42f2),
-				EBMLMaxSizeLength    = Uint(0x42f3),
+				EBMLMaxIDLength      = Uint(0x42f2).Named("EBMLMaxIDLength"),
+				EBMLMaxSizeLength    = Uint(0x42f3).Named("EBMLMaxSizeLength"),
 				DocType              = Ascii(0x4282).Named("DocType"),
 				DocTypeVersion       = Uint(0x4287).Named("DocTypeVersion"),
 				DocTypeReadVersion   = Uint(0x4285).Named("DocTypeReadVersion");
@@ -110,13 +110,13 @@ namespace NEbml.Core
 			internal SignatureSlotDesc(long id) : base(id) { }
 
 			public readonly ElementDescriptor
-				SignatureAlgo = Uint(0x7e8a),
-				SignatureHash = Uint(0x7e9a),
-				SignaturePublicKey = Binary(0x7ea5),
-				Signature = Binary(0x7eb5),
-				SignatureElements = Container(0x7e5b),
-				SignatureElementList = Container(0x7e7b),
-				SignedElement = Binary(0x6532);
+				SignatureAlgo = Uint(0x7e8a).Named("SignatureAlgo"),
+				SignatureHash = Uint(0x7e9a).Named("SignatureHash"),
+				SignaturePublicKey = Binary(0x7ea5).Named("SignaturePublicKey"),
+				Signature = Binary(0x7eb5).Named("Signature"),
+				SignatureElements = Container(0x7e5b).Named("SignatureElements"),
+				SignatureElementList = Container(0x7e7b).Named("SignatureElementList"),
+				SignedElement = Binary(0x6532).Named("SignedElement");
 		}
 	}
 }
