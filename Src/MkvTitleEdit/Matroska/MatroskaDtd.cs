@@ -47,7 +47,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 			public sealed class SeekHeadDesc : MasterElementDescriptor
 			{
-				internal SeekHeadDesc(long identifier) : base(identifier) { }
+				internal SeekHeadDesc(long identifier) : base(identifier, "SeekHead") { }
 
 				public readonly SeekDesc Seek = new SeekDesc(0x4dbb);
 
@@ -65,7 +65,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 			public sealed class SegmentInfoDesc : MasterElementDescriptor
 			{
-				internal SegmentInfoDesc(long identifier)
+				internal SegmentInfoDesc(long identifier, "SegmentInfo")
 					: base(identifier)
 				{ }
 
@@ -86,8 +86,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 			public sealed class ClusterDesc : MasterElementDescriptor
 			{
-				internal ClusterDesc(long identifier)
-					: base(identifier)
+				internal ClusterDesc(long identifier): base(identifier, "Cluster")
 				{ }
 
 				public readonly ElementDescriptor
@@ -100,8 +99,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 				public sealed class BlockGroupDesc : MasterElementDescriptor
 				{
-					internal BlockGroupDesc(long identifier)
-						: base(identifier)
+					internal BlockGroupDesc(long identifier): base(identifier, "BlockGroup")
 					{ }
 
 					public readonly BlockAdditionsDesc
@@ -122,8 +120,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 					public sealed class BlockAdditionsDesc : MasterElementDescriptor
 					{
-						internal BlockAdditionsDesc(long identifier)
-							: base(identifier)
+						internal BlockAdditionsDesc(long identifier): base(identifier, "BlockAdditions")
 						{ }
 
 						public readonly BlockMoreDesc
@@ -143,8 +140,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 					public sealed class SlicesDesc : MasterElementDescriptor
 					{
-						internal SlicesDesc(long identifier)
-							: base(identifier)
+						internal SlicesDesc(long identifier): base(identifier, "Slices")
 						{ }
 
 						public readonly TimeSliceDesc
@@ -152,7 +148,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 						public sealed class TimeSliceDesc : MasterElementDescriptor
 						{
-							internal TimeSliceDesc(long identifier) : base(identifier) { }
+							internal TimeSliceDesc(long identifier) : base(identifier, "TimeSlice") { }
 
 							public readonly ElementDescriptor
 								LaceNumber = Uint(0xcc),  // [ def:0; ]
@@ -168,16 +164,14 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 		public sealed class TracksDesc : MasterElementDescriptor
 		{
-			internal TracksDesc(): base(0x1654ae6b) { }
+			internal TracksDesc(): base(0x1654ae6b, "Tracks") { }
 
 			public readonly TrackEntryDesc
 				TrackEntry = new TrackEntryDesc(0xae);
 
 			public sealed class TrackEntryDesc : MasterElementDescriptor
 			{
-				internal TrackEntryDesc(long identifier)
-					: base(identifier)
-				{ }
+				internal TrackEntryDesc(long identifier): base(identifier, "TrackEntry") {}
 
 				public readonly ElementDescriptor
 					TrackNumber = Uint(0xd7).Named("Track#"), // [ range:1..; ]
@@ -202,7 +196,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 					TrackOverlay = Uint(0x6fab);
 
 				public readonly VideoDesc
-					Video = new VideoDesc();
+					Video = new();
 				public readonly AudioDesc
 					Audio = new AudioDesc();
 				public readonly ContentEncodingsDesc
@@ -210,7 +204,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 				public sealed class VideoDesc : MasterElementDescriptor
 				{
-					internal VideoDesc() : base(0xe0)
+					internal VideoDesc() : base(0xe0, "Video")
 					{}
 
 					public readonly ElementDescriptor
@@ -229,7 +223,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 				public sealed class AudioDesc : MasterElementDescriptor
 				{
-					internal AudioDesc(): base(0xe1)
+					internal AudioDesc(): base(0xe1, "Audio")
 					{}
 
 					public readonly ElementDescriptor
@@ -243,13 +237,11 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 				public sealed class ContentEncodingsDesc : MasterElementDescriptor
 				{
-					internal ContentEncodingsDesc():base(0x6d80){}
+					internal ContentEncodingsDesc():base(0x6d80, "ContentEncodings"){}
 
 					public sealed class ContentEncodingDesc : MasterElementDescriptor
 					{
-						internal ContentEncodingDesc()
-							: base(0x6240)
-						{ }
+						internal ContentEncodingDesc(): base(0x6240, "ContentEncoding") {}
 
 						public readonly ElementDescriptor
 							ContentEncodingOrder = Uint(0x5031),
@@ -264,7 +256,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 
 						public sealed class ContentCompressionDesc : MasterElementDescriptor
 						{
-							internal ContentCompressionDesc() : base(0x5034) { }
+							internal ContentCompressionDesc() : base(0x5034, "ContentCompression") { }
 
 							public readonly ElementDescriptor
 								ContentCompAlgo = Uint(0x4254),
@@ -272,7 +264,7 @@ namespace NEbml.MkvTitleEdit.Matroska
 						}
 						public sealed class ContentEncryptionDesc : MasterElementDescriptor
 						{
-							internal ContentEncryptionDesc() : base(0x5035) { }
+							internal ContentEncryptionDesc() : base(0x5035, "ContentEncryption") { }
 
 							public readonly ElementDescriptor
 								ContentEncAlgo = Uint(0x47e1),
@@ -281,7 +273,6 @@ namespace NEbml.MkvTitleEdit.Matroska
 								ContentSigKeyID = Binary(0x47e4),
 								ContentSigAlgo = Uint(0x47e5),
 								ContentSigHashAlgo = Uint(0x47e6);
-
 						}
 					}
 				}
