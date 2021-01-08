@@ -4,7 +4,7 @@ using System.Text;
 namespace NEbml.Core
 {
 	/// <summary>
-	/// Defined the EBML element description.
+	/// Defines the EBML element description.
 	/// </summary>
 	public class ElementDescriptor
 	{
