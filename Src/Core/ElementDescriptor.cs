@@ -14,6 +14,17 @@ namespace NEbml.Core
 		/// <param name="identifier"></param>
 		/// <param name="name"></param>
 		/// <param name="type"></param>
+		public ElementDescriptor(ulong identifier, string name, ElementType type)
+			: this(VInt.FromEncoded(identifier), name, type)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <code>ElementDescriptor</code> class.
+		/// </summary>
+		/// <param name="identifier"></param>
+		/// <param name="name"></param>
+		/// <param name="type"></param>
 		public ElementDescriptor(long identifier, string name, ElementType type)
 			: this(VInt.FromEncoded((ulong)identifier), name, type)
 		{
