@@ -88,6 +88,10 @@ namespace NEbml.Core
 
 			if (position.HasValue)
 			{
+				if (position < _source.Position)
+				{
+					throw new EbmlDataFormatException("invalid position, seeking backwards is not supported");
+				}
 				Skip(position.Value - (_container.Size - _container.Remaining));
 			}
 
