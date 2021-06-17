@@ -71,9 +71,10 @@ namespace NEbml.Core
 		/// <summary>
 		/// Reads the next child element of the current container and positions the stream at the beginning of the element data.
 		/// </summary>
+		/// <param name="position">The exact position in the current container to read the next element from.</param>
 		/// <returns><code>true</code> if the child element is available; <code>false</code> otherwise</returns>
 		/// <exception cref="EbmlDataFormatException">if the value of the element identifier or element data size read from the stream is reserved</exception>
-		public bool ReadNext()
+		public bool ReadNext(long? position = null)
 		{
 			Skip(_element.Remaining);
 			_container.Remaining -= _element.Size;
@@ -85,7 +86,13 @@ namespace NEbml.Core
 				return false;
 			}
 
+			if (position.HasValue)
+			{
+				Skip(position.Value - (_container.Size - _container.Remaining));
+			}
+
 			ElementPosition = _source.Position;
+			
 			var identifier = ReadVarInt(4);
 
 			if (identifier.IsReserved)
@@ -167,10 +174,8 @@ namespace NEbml.Core
 				throw new InvalidOperationException();
 			}
 			_container.Remaining -= _element.Size;
-			Skip(_container.Remaining);
-			_container.Remaining = 0;
 			_element = _container;
-
+			Skip(_element.Remaining);
 			_container = _containers.Pop();
 		}
 
