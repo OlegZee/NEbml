@@ -84,21 +84,39 @@ namespace NEbml.Core
 				_element = Element.Empty;
 				return false;
 			}
+			
+			ReadElement();
+			return true;
+		}
 
-			ElementPosition = _source.Position;
-			var identifier = ReadVarInt(4);
+		/// <summary>
+		/// Reads the next child element of the current container at the specified position and positions the stream at the beginning of the element data.
+		/// </summary>
+		/// <param name="position">The exact position in the current container to read the next element from.</param>
+		/// <returns><code>true</code> if the child element is available; <code>false</code> otherwise</returns>
+		/// <exception cref="EbmlDataFormatException">if the value of the element identifier or element data size read from the stream is reserved</exception>
+		public bool ReadAt(long position)
+		{
+			_container.Remaining -= _element.Size;
+			_element = _container;
 
-			if (identifier.IsReserved)
+			if (_element.Remaining < 1)
 			{
-				throw new EbmlDataFormatException("invalid element identifier value");
+				_element = Element.Empty;
+				return false;
 			}
 
-			var size = ReadVarInt(8).Value;
-			if (size > (ulong)_container.Remaining)
+			// compute the desired position relative to the current position in the container
+			var relativePosition = position - (_container.Size - _container.Remaining);
+
+			if (relativePosition < 0)
 			{
-				throw new EbmlDataFormatException("invalid element size value");
+				throw new EbmlDataFormatException("invalid position, seeking backwards is not supported");
 			}
-			_element = new Element(identifier, (long) size, ElementType.None);
+
+			Skip(relativePosition);
+
+			ReadElement();
 			return true;
 		}
 
@@ -167,10 +185,8 @@ namespace NEbml.Core
 				throw new InvalidOperationException();
 			}
 			_container.Remaining -= _element.Size;
-			Skip(_container.Remaining);
-			_container.Remaining = 0;
 			_element = _container;
-
+			Skip(_element.Remaining);
 			_container = _containers.Pop();
 		}
 
@@ -404,6 +420,26 @@ namespace NEbml.Core
 				length -= r;
 				_element.Remaining -= r;
 			}
+		}
+
+		private void ReadElement()
+		{
+			ElementPosition = _source.Position;
+
+			var identifier = ReadVarInt(4);
+
+			if (identifier.IsReserved)
+			{
+				throw new EbmlDataFormatException("invalid element identifier value");
+			}
+
+			var size = ReadVarInt(8).Value;
+			if (size > (ulong)_container.Remaining)
+			{
+				throw new EbmlDataFormatException("invalid element size value");
+			}
+			
+			_element = new Element(identifier, (long) size, ElementType.None);
 		}
 
 		/// <summary>
