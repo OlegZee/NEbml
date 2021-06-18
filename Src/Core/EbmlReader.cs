@@ -69,37 +69,6 @@ namespace NEbml.Core
 		#region Public API
 
 		/// <summary>
-		/// Reads the next child element of the current container at the specified position and positions the stream at the beginning of the element data.
-		/// </summary>
-		/// <param name="position">The exact position in the current container to read the next element from.</param>
-		/// <returns><code>true</code> if the child element is available; <code>false</code> otherwise</returns>
-		/// <exception cref="EbmlDataFormatException">if the value of the element identifier or element data size read from the stream is reserved</exception>
-		public bool ReadAt(long position)
-		{
-			_container.Remaining -= _element.Size;
-			_element = _container;
-			
-			if (_element.Remaining < 1)
-			{
-				_element = Element.Empty;
-				return false;
-			}
-
-			// compute the desired position relative to the current position in the container
-			var relativePosition = position - (_container.Size - _container.Remaining);
-			
-			if (relativePosition < 0)
-			{
-				throw new EbmlDataFormatException("invalid position, seeking backwards is not supported");
-			}
-			
-			Skip(relativePosition);
-
-			ReadElement();
-			return true;
-		}
-
-		/// <summary>
 		/// Reads the next child element of the current container and positions the stream at the beginning of the element data.
 		/// </summary>
 		/// <returns><code>true</code> if the child element is available; <code>false</code> otherwise</returns>
@@ -116,6 +85,37 @@ namespace NEbml.Core
 				return false;
 			}
 			
+			ReadElement();
+			return true;
+		}
+
+		/// <summary>
+		/// Reads the next child element of the current container at the specified position and positions the stream at the beginning of the element data.
+		/// </summary>
+		/// <param name="position">The exact position in the current container to read the next element from.</param>
+		/// <returns><code>true</code> if the child element is available; <code>false</code> otherwise</returns>
+		/// <exception cref="EbmlDataFormatException">if the value of the element identifier or element data size read from the stream is reserved</exception>
+		public bool ReadAt(long position)
+		{
+			_container.Remaining -= _element.Size;
+			_element = _container;
+
+			if (_element.Remaining < 1)
+			{
+				_element = Element.Empty;
+				return false;
+			}
+
+			// compute the desired position relative to the current position in the container
+			var relativePosition = position - (_container.Size - _container.Remaining);
+
+			if (relativePosition < 0)
+			{
+				throw new EbmlDataFormatException("invalid position, seeking backwards is not supported");
+			}
+
+			Skip(relativePosition);
+
 			ReadElement();
 			return true;
 		}
