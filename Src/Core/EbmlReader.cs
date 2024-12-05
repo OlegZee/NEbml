@@ -1,5 +1,5 @@
 /* Copyright (c) 2011-2020 Oleg Zee
- * 
+ *
  * Original java code Copyright (c) 2008, Oleg S. Estekhin
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -84,7 +84,7 @@ namespace NEbml.Core
 				_element = Element.Empty;
 				return false;
 			}
-			
+
 			ReadElement();
 			return true;
 		}
@@ -156,7 +156,7 @@ namespace NEbml.Core
 		public long ElementPosition { get; private set; }
 
 		/// <summary>
-		/// Instructs the reader to parse the current element data as sub-elements. The current container 
+		/// Instructs the reader to parse the current element data as sub-elements. The current container
 		/// will be saved on the stack and the current element will become the new container.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">if the current element is not available or if the element data was already accessed as some other type</exception>
@@ -234,7 +234,7 @@ namespace NEbml.Core
 
 		/// <summary>
 		/// Reads the element data as a floating-point number.
-		/// 
+		///
 		/// If the element data size is equal to <code>4</code>, then an instance of the <code>Float</code> is returned. If
 		/// the element data size is equal to <code>8</code>, then an instance of the <code>Double</code> is returned.
 		/// </summary>
@@ -323,7 +323,7 @@ namespace NEbml.Core
 				return -1;
 			}
 			var r = _source.ReadFully(buffer, offset, (int) Math.Min(_element.Remaining, length));
-			if (r < 0)
+			if (r == 0)
 			{
 				throw new EndOfStreamException();
 			}
@@ -379,7 +379,7 @@ namespace NEbml.Core
 			while (length > 0)
 			{
 				int r = _source.ReadFully(buffer, offset, length);
-				if (r < 0)
+				if (r == 0)
 				{
 					throw new EndOfStreamException();
 				}
@@ -413,7 +413,7 @@ namespace NEbml.Core
 			{
 				var buffer = GetSharedBuffer(2048);
 				var r = _source.ReadFully(buffer, 0, (int) Math.Min(length, buffer.Length));
-				if (r < 0)
+				if (r == 0)
 				{
 					throw new EndOfStreamException();
 				}
@@ -438,7 +438,7 @@ namespace NEbml.Core
 			{
 				throw new EbmlDataFormatException("invalid element size value");
 			}
-			
+
 			_element = new Element(identifier, (long) size, ElementType.None);
 		}
 
