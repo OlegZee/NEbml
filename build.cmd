@@ -1,1 +1,1 @@
-dotnet fsi build.fsx -- clean build
+dotnet fsi build.fsx -- -- clean build

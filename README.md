@@ -20,16 +20,20 @@ Unlike XML the EBML is very efficient in space and performance terms.
 * Code review
 * Other guidelines
 
+### Prerequisites
+
+ * dotnet 8 SDK
+
 ### Publishing new version (note to myself)
 
-```cmd
-REM build and test a package
-dotnet fsi build.fsx -- clean build test
+```bash
+# build and test a package
+dotnet fsi build.fsx -- -- clean build test
 
-REM set env vars:
-set VER=0.9.0
-set NUGET_KEY=111112222233333
+# set env vars:
+export VER=0.9.0
+export NUGET_KEY=111112222233333
 
-REM pack and push the package
-dotnet fsi build.fsx -- push
+# pack and push the package
+dotnet fsi build.fsx -- -- push
 ```
