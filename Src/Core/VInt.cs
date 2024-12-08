@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2011-2020 Oleg Zee
+/* Copyright (c) 2011-2020 Oleg Zee
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -110,7 +110,7 @@ namespace NEbml.Core
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="elementId"></param>
 		/// <returns></returns>
@@ -188,7 +188,7 @@ namespace NEbml.Core
 				throw new EbmlDataFormatException("Length bigger than 8 is not supported");
 			// TODO handle EBMLMaxSizeWidth
 
-			var extraBytes = (buffer[0] & 0xf0) != 0 
+			var extraBytes = (buffer[0] & 0xf0) != 0
 				? ExtraBytesSize[buffer[0] >> 4]
 				: 4 + ExtraBytesSize[buffer[0]];
 
@@ -234,7 +234,7 @@ namespace NEbml.Core
 		/// <summary>
 		/// Maps length to data bits mask
 		/// </summary>
-		private static readonly ulong[] DataBitsMask = 
+		private static readonly ulong[] DataBitsMask =
 		{
 			(1L << 0) - 1,
 			(1L << 7) - 1,
