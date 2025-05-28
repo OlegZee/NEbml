@@ -433,13 +433,21 @@ namespace NEbml.Core
 				throw new EbmlDataFormatException("invalid element identifier value");
 			}
 
-			var size = ReadVarInt(8).Value;
-			if (size > (ulong)_container.Remaining)
+            var size = ReadVarInt(8);
+
+            var realSize = size.Value;
+
+            if (size.EncodedValue == 0x01FFFFFFFFFFFFFF)
+            {
+                realSize = (ulong)_container.Remaining;
+            }
+
+            if (realSize > (ulong)_container.Remaining)
 			{
 				throw new EbmlDataFormatException("invalid element size value");
 			}
 
-			_element = new Element(identifier, (long) size, ElementType.None);
+			_element = new Element(identifier, (long)realSize, ElementType.None);
 		}
 
 		/// <summary>
