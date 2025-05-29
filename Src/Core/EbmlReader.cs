@@ -437,7 +437,7 @@ namespace NEbml.Core
 
             var realSize = size.Value;
 
-            if (size.EncodedValue == 0x01FFFFFFFFFFFFFF)
+            if (size.EncodedValue == UnknownElementSize)
             {
                 realSize = (ulong)_container.Remaining;
             }
