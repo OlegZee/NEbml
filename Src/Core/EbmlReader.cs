@@ -67,7 +67,6 @@ namespace NEbml.Core
 		}
 
 		#region Public API
-
 		/// <summary>
 		/// Reads the next child element of the current container and positions the stream at the beginning of the element data.
 		/// </summary>
@@ -85,8 +84,16 @@ namespace NEbml.Core
 				return false;
 			}
 
+			try
+			{
 			ReadElement();
 			return true;
+			}
+			catch (EndOfStreamException)
+			{
+				_element = Element.Empty;
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -184,10 +191,27 @@ namespace NEbml.Core
 			{
 				throw new InvalidOperationException();
 			}
-			_container.Remaining -= _element.Size;
-			_element = _container;
+			
+			// Skip any remaining data in current element
 			Skip(_element.Remaining);
+			
+			// Account for current element size in container
+			_container.Remaining -= _element.Size;
+			
+			// Reset current element before skipping container data
+			_element = Element.Empty;
+			
+			// Skip any remaining data in the container  
+			Skip(_container.Remaining);
+			
+			// Store container size for parent container update
+			var containerSize = _container.Size;
+			
+			// Restore parent container
 			_container = _containers.Pop();
+			
+			// Update parent container's remaining size
+			_container.Remaining -= containerSize;
 		}
 
 		/// <summary>
@@ -245,12 +269,19 @@ namespace NEbml.Core
 			{
 				throw new InvalidOperationException();
 			}
-			if (_element.Size != 4 && _element.Size != 8)
+			if (_element.Size != 0 && _element.Size != 4 && _element.Size != 8)
 			{
 				throw new EbmlDataFormatException("invalid float size");
 			}
 			_element.Type = ElementType.Float;
 			var encodedValueSize = (int) _element.Size;
+			
+			// EBML specification: zero-size element returns default value of 0.0
+			if (encodedValueSize == 0)
+			{
+				return 0.0;
+			}
+			
 			var num = ReadUnsignedIntegerUnsafe(encodedValueSize);
 
 			switch (encodedValueSize)
@@ -274,17 +305,27 @@ namespace NEbml.Core
 			{
 				throw new InvalidOperationException();
 			}
-			if (_element.Size != 8)
+			if (_element.Size != 0 && _element.Size != 8)
 			{
 				throw new EbmlDataFormatException("invalid date size");
 			}
 			_element.Type = ElementType.Date;
+			
+			// EBML specification: zero-size element returns default value of millennium start
+			if (_element.Size == 0)
+			{
+				return MilleniumStart;
+			}
+			
 			var ns = ReadSignedIntegerUnsafe(8);
 
 			return MilleniumStart.AddTicks(ns/100);
 		}
 
-		internal static readonly DateTime MilleniumStart = new DateTime(2001, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		/// <summary>
+		/// The reference date for EBML date calculations (2001-01-01T00:00:00.000000000 UTC)
+		/// </summary>
+		public static readonly DateTime MilleniumStart = new DateTime(2001, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		/// <summary>
 		/// Reads the element data as an ASCII string.
@@ -335,6 +376,9 @@ namespace NEbml.Core
 
 		#region IDisposable Members
 
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
 		public void Dispose()
 		{
 			_source.Dispose();
@@ -428,18 +472,37 @@ namespace NEbml.Core
 
 			var identifier = ReadVarInt(4);
 
+			// EBML specification compliance: Element ID validation
 			if (identifier.IsReserved)
 			{
 				throw new EbmlDataFormatException("invalid element identifier value");
 			}
 
-			var size = ReadVarInt(8).Value;
-			if (size > (ulong)_container.Remaining)
+			// EBML specification compliance: Element ID cannot have all data bits set to 0
+			if (identifier.Value == 0)
+			{
+				throw new EbmlDataFormatException("invalid element identifier value");
+			}			// EBML specification compliance: Element ID must be encoded in shortest form
+			if (!identifier.IsValidIdentifier)
+			{
+				throw new EbmlDataFormatException("element identifier not encoded in shortest form");
+			}
+
+			// Read Element Data Size VINT (up to 8 bytes as per EBML specification)
+			var vsize = ReadVarInt(8);
+			
+			// EBML specification compliance: Handle unknown-size elements
+			// "An Element Data Size with all VINT_DATA bits set to one is reserved as an 
+			// indicator that the size of the EBML Element is unknown"
+			// For unknown-size elements, set size to remaining container size
+			long size = IsUnknownSize(vsize) ? _container.Remaining : (long)vsize.Value;
+
+			if (size > _container.Remaining)
 			{
 				throw new EbmlDataFormatException("invalid element size value");
 			}
 
-			_element = new Element(identifier, (long) size, ElementType.None);
+			_element = new Element(identifier, size, ElementType.None);
 		}
 
 		/// <summary>
@@ -470,7 +533,7 @@ namespace NEbml.Core
 			long result = (sbyte)buffer[0]; // with sign extension
 			for (var i = 1; i < length; i++)
 			{
-				result = result << 8 | buffer[i] & 0xff;
+				result = (result << 8) | ((uint)buffer[i] & 0xff);
 			}
 			return result;
 		}
@@ -511,12 +574,19 @@ namespace NEbml.Core
 			}
 
 			var buffer = FillBuffer(encodedValueSize);
-			while (encodedValueSize > 0 && buffer[encodedValueSize - 1] == 0)
+			
+			// EBML specification: string should be terminated at first null octet
+			int stringLength = encodedValueSize;
+			for (int i = 0; i < encodedValueSize; i++)
 			{
-				encodedValueSize--;
+				if (buffer[i] == 0)
+			{
+					stringLength = i;
+					break;
+				}
 			}
 
-			return decoder.GetString(buffer, 0, encodedValueSize);
+			return decoder.GetString(buffer, 0, stringLength);
 		}
 
 		#endregion
@@ -553,5 +623,20 @@ namespace NEbml.Core
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Determines whether a VINT represents an unknown-size value.
+		/// According to EBML specification, an Element Data Size with all VINT_DATA bits set to one 
+		/// is reserved as an indicator that the size of the EBML Element is unknown.
+		/// </summary>
+		/// <param name="vint">The VINT to check</param>
+		/// <returns>True if the VINT represents unknown size, false otherwise</returns>
+		private static bool IsUnknownSize(VInt vint)
+		{
+			// EBML specification: "An Element Data Size with all VINT_DATA bits set to one is reserved 
+			// as an indicator that the size of the EBML Element is unknown"
+			// This is equivalent to checking if the VINT is reserved (all data bits are 1)
+			return vint.IsReserved;
+		}
 	}
 }
