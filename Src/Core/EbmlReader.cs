@@ -198,20 +198,37 @@ namespace NEbml.Core
 			// Account for current element size in container
 			_container.Remaining -= _element.Size;
 			
-			// Reset current element before skipping container data
+			// Reset current element before handling container exit
 			_element = Element.Empty;
 			
-			// Skip any remaining data in the container  
-			Skip(_container.Remaining);
+			// For unknown-size containers, we don't skip remaining data
+			// because the "size" was just an estimate. The actual size consumed
+			// is determined by what was actually read.
+			if (!_container.IsUnknownSize)
+			{
+				// For known-size containers, skip any remaining data  
+				Skip(_container.Remaining);
+			}
 			
-			// Store container size for parent container update
-			var containerSize = _container.Size;
+			// Calculate actual size consumed by the container
+			long actualSizeConsumed;
+			if (_container.IsUnknownSize)
+			{
+				// For unknown-size containers, the actual size consumed is
+				// the original size minus what remains unread
+				actualSizeConsumed = _container.Size - _container.Remaining;
+			}
+			else
+			{
+				// For known-size containers, the declared size is the actual size
+				actualSizeConsumed = _container.Size;
+			}
 			
 			// Restore parent container
 			_container = _containers.Pop();
 			
-			// Update parent container's remaining size
-			_container.Remaining -= containerSize;
+			// Update parent container's remaining size based on actual consumption
+			_container.Remaining -= actualSizeConsumed;
 		}
 
 		/// <summary>
@@ -494,15 +511,22 @@ namespace NEbml.Core
 			// EBML specification compliance: Handle unknown-size elements
 			// "An Element Data Size with all VINT_DATA bits set to one is reserved as an 
 			// indicator that the size of the EBML Element is unknown"
-			// For unknown-size elements, set size to remaining container size
-			long size = IsUnknownSize(vsize) ? _container.Remaining : (long)vsize.Value;
+			bool isUnknownSize = IsUnknownSize(vsize);
+			if (isUnknownSize && _containers.Count == 0)
+			{
+				// EBML specification compliance: Unknown-size elements are not allowed at root level
+				// They require a parent container with unknownsizeallowed=true
+				throw new EbmlDataFormatException("unknown-size elements are not allowed at root level");
+			}
+
+			long size = isUnknownSize ? _container.Remaining : (long)vsize.Value;
 
 			if (size > _container.Remaining)
 			{
 				throw new EbmlDataFormatException("invalid element size value");
 			}
 
-			_element = new Element(identifier, size, ElementType.None);
+			_element = new Element(identifier, size, ElementType.None, isUnknownSize);
 		}
 
 		/// <summary>
@@ -599,6 +623,7 @@ namespace NEbml.Core
 
 			public readonly VInt Identifier;
 			public readonly long Size;
+			public readonly bool IsUnknownSize;
 
 			public bool IsEmpty => !Identifier.IsValidIdentifier && Size == 0 && Type == ElementType.None;
 
@@ -608,16 +633,17 @@ namespace NEbml.Core
 
 			public ElementType Type;
 
-			public Element(VInt identifier, long sizeValue, ElementType type)
+			public Element(VInt identifier, long sizeValue, ElementType type, bool isUnknownSize = false)
 			{
 				Identifier = identifier;
 				Size = sizeValue;
 				Remaining = sizeValue;
 				Type = type;
+				IsUnknownSize = isUnknownSize;
 			}
 
 			private Element()
-				: this(VInt.UnknownSize(2), 0L, ElementType.None)
+				: this(VInt.UnknownSize(2), 0L, ElementType.None, false)
 			{
 			}
 		}

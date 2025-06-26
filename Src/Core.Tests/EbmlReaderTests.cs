@@ -245,7 +245,7 @@ namespace Core.Tests
         }
 
         [Test]
-        public void ReadNext_WithUnknownSize_HandlesCorrectly()
+        public void ReadNext_WithUnknownSize_ThrowsExceptionAtRootLevel()
         {
             var elementId = VInt.MakeId(0x80);
             WriteElementHeader(elementId, VInt.UnknownSize(1)); // Unknown size with 1-byte VINT
@@ -253,15 +253,15 @@ namespace Core.Tests
             _stream.Write(data, 0, data.Length);
             
             StartReader();
-            Assert.IsTrue(_reader.ReadNext());
-            // For unknown size, the size should be the remaining container size
-            Assert.IsTrue(_reader.ElementSize > 0);
+            // Unknown-size elements are not allowed at root level per EBML specification
+            var ex = Assert.Throws<EbmlDataFormatException>(() => _reader.ReadNext());
+            Assert.IsTrue(ex.Message.Contains("unknown-size elements are not allowed at root level"));
         }
 
         [Test]
-        public void ReadNext_WithUnknownSizeDifferentLengths_HandlesCorrectly()
+        public void ReadNext_WithUnknownSizeDifferentLengths_ThrowsExceptionAtRootLevel()
         {
-            // Test unknown-size elements with different VINT lengths (1-8 bytes)
+            // Test that unknown-size elements with different VINT lengths (1-8 bytes) are rejected at root level
             var testCases = new[]
             {
                 new { Length = 1, Name = "1-byte" },
@@ -291,14 +291,11 @@ namespace Core.Tests
                 
                 stream.Position = 0;
                 
-                // Read and verify
-                Assert.IsTrue(reader.ReadNext(), $"Failed to read element with {testCase.Name} unknown-size VINT");
-                
-                // For unknown size, element size should equal remaining container size after header
-                var headerSize = elementId.Length + unknownSizeVint.Length;
-                var expectedSize = 1000 - headerSize; // Container size minus header size
-                Assert.AreEqual(expectedSize, reader.ElementSize, 
-                    $"Incorrect element size for {testCase.Name} unknown-size VINT. Expected: {expectedSize}, Actual: {reader.ElementSize}");
+                // Read and verify that it throws exception at root level
+                var ex = Assert.Throws<EbmlDataFormatException>(() => reader.ReadNext(), 
+                    $"Should throw exception for {testCase.Name} unknown-size VINT at root level");
+                Assert.IsTrue(ex.Message.Contains("unknown-size elements are not allowed at root level"),
+                    $"Exception message should mention root level restriction for {testCase.Name} VINT");
             }
         }
 
@@ -310,7 +307,7 @@ namespace Core.Tests
         [TestCase(6, 4398046511103UL)]
         [TestCase(7, 562949953421311UL)]
         [TestCase(8, 72057594037927935UL)]
-        public void ReadNext_WithUnknownSizeAllVintLengthsSupported_ProperlyDetected(int vintLength, ulong maxValue)
+        public void ReadNext_WithUnknownSizeAllVintLengthsSupported_ThrowsExceptionAtRootLevel(int vintLength, ulong maxValue)
         {
             using var stream = new MemoryStream();
             using var reader = new EbmlReader(stream, 1000);
@@ -328,11 +325,10 @@ namespace Core.Tests
             stream.Write(new byte[] { 0x01, 0x02, 0x03 }, 0, 3);
             
             stream.Position = 0;
-            Assert.IsTrue(reader.ReadNext());
             
-            // Should be treated as unknown-size: element size = remaining container size
-            var expectedSize = 1000 - elementId.Length - unknownSizeVint.Length;
-            Assert.AreEqual(expectedSize, reader.ElementSize);
+            // Should throw exception because unknown-size elements are not allowed at root level
+            var ex = Assert.Throws<EbmlDataFormatException>(() => reader.ReadNext());
+            Assert.IsTrue(ex.Message.Contains("unknown-size elements are not allowed at root level"));
         }
 
         #endregion
@@ -713,7 +709,7 @@ namespace Core.Tests
             
             var containerBytes = containerData.ToArray();
             WriteElement(containerId, containerBytes);
-            WriteElement(nextElementId, new byte[] { 0x99 });
+            WriteElement(nextElementId, [0x99]);
             
             StartReader();
             Assert.IsTrue(_reader.ReadNext());
