@@ -8,6 +8,7 @@ NEbml provides facility to read/write EBML binary format. The idea of EBML is si
  * stores both atomic and compaund objects
 
 Unlike XML the EBML is very efficient in space and performance terms.
+Library tends to be compliant to Ebml specs, as they described in https://github.com/ietf-wg-cellar/ebml-specification.
 
 ### How do I get set up? ###
 

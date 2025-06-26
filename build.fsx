@@ -1,12 +1,11 @@
 // xake build file
 
-#r "nuget: Xake, 1.1.4.427-beta"
-#r "nuget: Xake.Dotnet, 1.1.4.7-beta"
+#r "nuget: Xake, 2"
 
 open Xake
 open Xake.Tasks
 
-let shellx cmd folder =
+let sh folder cmd =
     let command::arglist | OtherwiseFail(command,arglist) = (cmd: string).Split(' ') |> List.ofArray
     shell {
         cmd command
@@ -18,14 +17,19 @@ let shellx cmd folder =
 let (=?) value deflt = match value with |Some v -> v |None -> deflt
 
 let getVersion () = recipe {
-    let! ver = getEnv("VER")
+    let! ver = getEnv "VER"
     return ver =? "0.0.1"
+}
+
+let dependsOn (fileset) = recipe {
+    let! files = fileset |> getFiles
+    do! needFiles files
 }
 
 do xake {ExecOptions.Default with FileLog = "build.log"; ConLogLevel = Loud } {
 
     rules [
-        "main"  <== ["build"; "test"; "nuget-pack"]
+        "main"  <== ["build"; "test"; "pack"]
 
         "clean" => recipe {
             do! rm { dir "Src/**/bin" }
@@ -33,31 +37,30 @@ do xake {ExecOptions.Default with FileLog = "build.log"; ConLogLevel = Loud } {
         }
 
         "build" ..> recipe {
+            do! dependsOn !! "Src/Core/**/*.cs"
             let! ver = getVersion()
-            do! "Src/Core" |> shellx $"dotnet build -c Release -p:Version={ver}"
+            do! sh "Src/Core" $"dotnet build -c Release -p:Version={ver}"
         }
 
         "test" ..> recipe {
-            let! testFiles = !! "Src/Core.Tests/**/*.cs" |> getFiles
-            do! needFiles testFiles
-
-            do! shellx "dotnet test" "Src/Core.Tests"
+            do! dependsOn !! "Src/Core.Tests/**/*.cs"
+            do! sh "Src/Core.Tests" "dotnet test"
         }
 
         "pack" ..> recipe {
             let! ver = getVersion()
-            do! "Src/Core" |> shellx $"dotnet pack -c Release -p:Version={ver}"
+            do! sh "Src/Core" $"dotnet pack -c Release -p:Version={ver}"
         }
 
         "push" => action {
             do! need ["pack"]
 
             let! ver = getVersion()
-            let! nuget_key_var = getEnv("NUGET_KEY")
+            let! nuget_key_var = getEnv "NUGET_KEY"
 
             let package_name = $"NEbml.{ver}.nupkg"
             let nuget_key = nuget_key_var =? ""
-            do! "Src/Core/bin/Release" |> shellx $"dotnet nuget push {package_name} --api-key {nuget_key} --source https://api.nuget.org/v3/index.json"
+            do! sh "Src/Core/bin/Release" $"dotnet nuget push {package_name} --api-key {nuget_key} --source https://api.nuget.org/v3/index.json"
         }
     ]
 
