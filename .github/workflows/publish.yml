@@ -1,0 +1,44 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Publish package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+    
+    - name: Extract version from tag
+      id: version
+      run: |
+        TAG_NAME="${{ github.ref_name }}"
+        VERSION="${TAG_NAME#v}"  # Remove 'v' prefix
+        echo "version=${VERSION}.${{ github.run_number }}" >> $GITHUB_OUTPUT
+    
+    - name: Build and test
+      run: dotnet fsi build.fsx -- -- build test
+    
+    - name: Publish
+      run: dotnet fsi build.fsx -- -- push
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
+        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+    
+    - name: Upload build log
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: build-log-${{ github.run_number }}.txt
+        path: build.log
+        retention-days: 5
