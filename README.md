@@ -24,17 +24,3 @@ Library tends to be compliant to Ebml specs, as they described in https://github
 ### Prerequisites
 
  * dotnet 8 SDK
-
-### Publishing new version (note to myself)
-
-```bash
-# build and test a package
-dotnet fsi build.fsx -- -- clean build test
-
-# set env vars:
-export VER=0.9.0
-export NUGET_KEY=111112222233333
-
-# pack and push the package
-dotnet fsi build.fsx -- -- push
-```
