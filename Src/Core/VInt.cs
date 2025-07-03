@@ -76,6 +76,11 @@ namespace NEbml.Core
 		/// </summary>
 		public int Length => _length;
 
+		/// <summary>
+		/// Implicitly converts VInt to nullable ulong, returning null for reserved values
+		/// </summary>
+		/// <param name="value">The VInt value to convert</param>
+		/// <returns>The ulong value or null if reserved</returns>
 		public static implicit operator ulong?(VInt value)
 		{
 			return !value.IsReserved ? value.Value : (ulong?) null;
@@ -258,6 +263,10 @@ namespace NEbml.Core
 
 		#region Equality members
 
+		/// <summary>
+		/// Returns the hash code for this VInt
+		/// </summary>
+		/// <returns>A hash code for the current object</returns>
 		public override int GetHashCode()
 		{
 			unchecked
@@ -271,6 +280,11 @@ namespace NEbml.Core
 			return other.EncodedValue == EncodedValue && other._length == _length;
 		}
 
+		/// <summary>
+		/// Determines whether the specified object is equal to the current VInt
+		/// </summary>
+		/// <param name="obj">The object to compare with the current VInt</param>
+		/// <returns>true if the specified object is equal to the current VInt; otherwise, false</returns>
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
@@ -279,6 +293,10 @@ namespace NEbml.Core
 
 		#endregion
 
+		/// <summary>
+		/// Returns a string representation of this VInt
+		/// </summary>
+		/// <returns>A string that represents the current VInt</returns>
 		public override string ToString()
 		{
 			return $"VInt, value = {Value}, length = {Length}, encoded = {EncodedValue:X}";

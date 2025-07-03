@@ -65,6 +65,10 @@ namespace NEbml.Core
 		/// <value>the element type or &lt;code&gt;null&lt;/code&gt; if the type is not known</value>
 		public ElementType Type { get; }
 
+		/// <summary>
+		/// Returns the hash code for this ElementDescriptor
+		/// </summary>
+		/// <returns>A hash code for the current object</returns>
 		public override int GetHashCode()
 		{
 			int result = 17;
@@ -74,6 +78,11 @@ namespace NEbml.Core
 			return result;
 		}
 
+		/// <summary>
+		/// Determines whether the specified object is equal to the current ElementDescriptor
+		/// </summary>
+		/// <param name="obj">The object to compare with the current ElementDescriptor</param>
+		/// <returns>true if the specified object is equal to the current ElementDescriptor; otherwise, false</returns>
 		public override bool Equals(object obj)
 		{
 			if (this == obj)
@@ -89,6 +98,10 @@ namespace NEbml.Core
 			return false;
 		}
 
+		/// <summary>
+		/// Returns a string representation of this ElementDescriptor
+		/// </summary>
+		/// <returns>A string that represents the current ElementDescriptor</returns>
 		public override string ToString()
 		{
 			var buffer = new StringBuilder();

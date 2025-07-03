@@ -45,6 +45,9 @@ namespace NEbml.Core
 		/// </summary>
 		MasterElement,
 
+		/// <summary>
+		/// Element type not yet determined or unknown
+		/// </summary>
 		None = -1
 	}
 }

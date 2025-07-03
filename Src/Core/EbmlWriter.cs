@@ -32,6 +32,9 @@ namespace NEbml.Core
 	/// </summary>
 	public class EbmlWriter
 	{
+		/// <summary>
+		/// The underlying stream to write EBML data to
+		/// </summary>
 		protected readonly Stream _stream;
 
 		/// <summary>

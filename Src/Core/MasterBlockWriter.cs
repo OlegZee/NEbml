@@ -55,6 +55,9 @@ namespace NEbml.Core
 			_flushImpl();
 		}
 
+		/// <summary>
+		/// Disposes the master block writer and flushes any pending data
+		/// </summary>
 		public void Dispose()
 		{
 			FlushData();
