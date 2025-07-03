@@ -169,6 +169,7 @@ namespace NEbml.Core
 		/// <returns></returns>
 		public int Write(VInt elementId, byte[] data)
 		{
+			if (data == null) throw new ArgumentNullException(nameof(data));
 			return Write(elementId, data, 0, data.Length);
 		}
 
