@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2011-2020 Oleg Zee
+﻿/* Copyright (c) 2011-2025 Oleg Zee
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -54,6 +54,7 @@ namespace NEbml.Core
 		///     data.WriteInt(DataItem1Id, 139874)
 		///     data.WriteUtf(DataItem2Id, "Hello world");
 		/// }
+		/// NOTE: this is subefficient for large data blocks, and it is error prone solution in general.
 		/// </summary>
 		/// <param name="elementId"></param>
 		/// <returns></returns>
