@@ -86,8 +86,8 @@ namespace NEbml.Core
 
 			try
 			{
-			ReadElement();
-			return true;
+				ReadElement();
+				return true;
 			}
 			catch (EndOfStreamException)
 			{

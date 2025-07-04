@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2011-2020 Oleg Zee
+﻿/* Copyright (c) 2011-2025 Oleg Zee
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -32,6 +32,9 @@ namespace NEbml.Core
 	/// </summary>
 	public class EbmlWriter
 	{
+		/// <summary>
+		/// The underlying stream to write EBML data to
+		/// </summary>
 		protected readonly Stream _stream;
 
 		/// <summary>
@@ -51,6 +54,7 @@ namespace NEbml.Core
 		///     data.WriteInt(DataItem1Id, 139874)
 		///     data.WriteUtf(DataItem2Id, "Hello world");
 		/// }
+		/// NOTE: this is inefficient for large data blocks, and it is error prone solution in general.
 		/// </summary>
 		/// <param name="elementId"></param>
 		/// <returns></returns>
@@ -169,6 +173,7 @@ namespace NEbml.Core
 		/// <returns></returns>
 		public int Write(VInt elementId, byte[] data)
 		{
+			if (data == null) throw new ArgumentNullException(nameof(data));
 			return Write(elementId, data, 0, data.Length);
 		}
 
