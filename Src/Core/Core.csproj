@@ -9,7 +9,16 @@
     <LangVersion>8</LangVersion>
     <Authors>Oleg Zee</Authors>
     <RepositoryUrl>https://github.com/OlegZee/NEbml</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>ebml;matroska;binary;format;parser</PackageTags>
+    <PackageProjectUrl>https://github.com/OlegZee/NEbml</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    
+    <Copyright>Copyright (c) 2011-2025 Oleg Zee</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 </Project>

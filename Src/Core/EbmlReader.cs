@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2020 Oleg Zee
+/* Copyright (c) 2011-2025 Oleg Zee
  *
  * Original java code Copyright (c) 2008, Oleg S. Estekhin
 
