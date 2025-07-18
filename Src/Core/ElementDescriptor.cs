@@ -94,9 +94,9 @@ namespace NEbml.Core
 		public override int GetHashCode()
 		{
 			int result = 17;
-			result = 37*result + Identifier.GetHashCode();
-			result = 37*result + (Name == null ? 0 : Name.GetHashCode());
-			result = 37*result + (Type == ElementType.None ? 0 : Type.GetHashCode());
+			result = 37 * result + Identifier.GetHashCode();
+			result = 37 * result + (Name == null ? 0 : Name.GetHashCode());
+			result = 37 * result + (Type == ElementType.None ? 0 : Type.GetHashCode());
 			return result;
 		}
 

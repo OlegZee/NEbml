@@ -25,30 +25,28 @@ using System.IO;
 namespace NEbml.Core
 {
 	/// <summary>
-	/// Extension methods for Stream operations
+	/// Implements the buffered (legacy) strategy for writing EBML master elements.
+	/// Used by <see cref="EbmlWriter.StartMasterElement(VInt, EbmlWriter.MasterElementSizeStrategy, int)"/> when the Buffered strategy is selected.
 	/// </summary>
-	public static class StreamExtensions
+	internal class BufferedMasterElementWriter : MasterElementWriterBase
 	{
-		/// <summary>
-		/// Reads data from a stream until the requested number of bytes is read or end of stream is reached
-		/// </summary>
-		/// <param name="stream">The stream to read from</param>
-		/// <param name="buffer">The buffer to store read data</param>
-		/// <param name="offset">The offset in the buffer to start storing data</param>
-		/// <param name="count">The number of bytes to read</param>
-		/// <returns>The total number of bytes read</returns>
-		public static int ReadFully(this Stream stream, byte[] buffer, int offset, int count)
+		internal BufferedMasterElementWriter(EbmlWriter writer, VInt elementId)
+			: base(new MemoryStream())
 		{
-			int bytesRead = 0;
-			int totalBytesRead = 0;
-
-			do
+			FlushImpl = () =>
 			{
-				bytesRead = stream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
-				totalBytesRead += bytesRead;
-			} while (bytesRead > 0 && totalBytesRead < count);
+				var buffer = (MemoryStream)BufferStream;
 
-			return totalBytesRead;
+				// Get the buffered data from the memory stream
+				var data = buffer.ToArray();
+				// Write the element header with optimal size field length
+				var sizeVInt = VInt.EncodeSize((ulong)data.Length);
+				elementId.Write(writer.BaseStream);
+				sizeVInt.Write(writer.BaseStream);
+				// Write the buffered content
+				writer.BaseStream.Write(data, 0, data.Length);
+				buffer.Close();
+			};
 		}
 	}
 }

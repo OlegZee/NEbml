@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2011-2025 Oleg Zee
+/* Copyright (c) 2011-2025 Oleg Zee
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -38,29 +38,75 @@ namespace NEbml.Core
 		protected readonly Stream _stream;
 
 		/// <summary>
-		/// Initializes a new instance of the EbmlWriter class
+		/// Exposes the underlying stream for derived classes.
 		/// </summary>
-		/// <param name="stream"></param>
+		protected internal Stream BaseStream => _stream;
+		/// <summary>
+		/// Initializes a new instance of the EbmlWriter class.
+		/// </summary>
+		/// <param name="stream">The stream to write EBML data to.</param>
 		public EbmlWriter(Stream stream)
 		{
 			_stream = stream ?? throw new ArgumentNullException(nameof(stream));
 		}
 
 		/// <summary>
-		/// Starts nested stream. Upon disposal of nested stream, the size is calculated and written to nested element header.
-		/// Example:
-		/// using(var data = writer.StartMasterElement(InnerDataElementId))
-		/// {
-		///     data.WriteInt(DataItem1Id, 139874)
-		///     data.WriteUtf(DataItem2Id, "Hello world");
-		/// }
-		/// NOTE: this is inefficient for large data blocks, and it is error prone solution in general.
+		/// Master element size calculation strategies.
 		/// </summary>
-		/// <param name="elementId"></param>
-		/// <returns></returns>
-		public MasterBlockWriter StartMasterElement(VInt elementId)
+		public enum MasterElementSizeStrategy
 		{
-			return new MasterBlockWriter(this, elementId);
+			/// <summary>
+			/// Buffer all content, then write the size field (default, legacy behavior).
+			/// </summary>
+			Buffered,
+			/// <summary>
+			/// Write a placeholder for the size, then backpatch it after content is written.
+			/// </summary>
+			Backpatching,
+			/// <summary>
+			/// Hybrid strategy: buffer initially, switch to backpatching when buffer limit is exceeded.
+			/// </summary>
+			Hybrid
+		}
+
+		/// <summary>
+		/// Starts a master element using the specified size calculation strategy.
+		/// </summary>
+		/// <param name="elementId">Element ID.</param>
+		/// <param name="strategy">Size calculation strategy (Buffered, Backpatching, or Hybrid).</param>
+		/// <param name="sizeFieldLength">Number of bytes to reserve for the size field (applies to backpatching and hybrid strategies; ignored for buffered).</param>
+		/// <returns>A <see cref="MasterElementWriterBase"/> for writing the master element.</returns>
+		public MasterElementWriterBase StartMasterElement(VInt elementId, MasterElementSizeStrategy strategy, int sizeFieldLength = 8)
+		{
+			return strategy switch
+			{
+				MasterElementSizeStrategy.Buffered => new BufferedMasterElementWriter(this, elementId),
+				MasterElementSizeStrategy.Backpatching => new BackpatchingMasterElementWriter(this, elementId, sizeFieldLength),
+				MasterElementSizeStrategy.Hybrid => StartHybridMasterElement(elementId, sizeFieldLength),
+				_ => throw new ArgumentOutOfRangeException(nameof(strategy), strategy, null),
+			};
+		}
+
+		/// <summary>
+		/// Legacy method for backward compatibility. Uses the Buffered strategy.
+		/// </summary>
+		/// <param name="elementId">Element ID.</param>
+		/// <returns>A <see cref="MasterElementWriterBase"/> for writing the master element.</returns>
+		public MasterElementWriterBase StartMasterElement(VInt elementId)
+		{
+			return StartMasterElement(elementId, MasterElementSizeStrategy.Buffered);
+		}
+
+		/// <summary>
+		/// Starts a master element using the Hybrid strategy with a custom buffer limit.
+		/// </summary>
+		/// <param name="elementId">Element ID.</param>
+		/// <param name="sizeFieldLength">Number of bytes to reserve for the size field in backpatching mode (default 8).</param>
+		/// <param name="bufferLimit">Buffer size limit in bytes before switching to backpatching (default 128).</param>
+		/// <returns>A <see cref="MasterElementWriterBase"/> for writing the master element.</returns>
+		public MasterElementWriterBase StartHybridMasterElement(VInt elementId, int sizeFieldLength = 8, int bufferLimit = 128)
+		{
+			return new HybridMasterElementWriter(this, elementId, sizeFieldLength, bufferLimit);
 		}
 
 		/// <summary>
@@ -134,7 +180,7 @@ namespace NEbml.Core
 		/// <returns></returns>
 		public int Write(VInt elementId, float value)
 		{
-			var u = new Union {fval = value}.uival;
+			var u = new Union { fval = value }.uival;
 			return elementId.Write(_stream) + EncodeWidth(4).Write(_stream) + WriteInt(u, 4);
 		}
 
@@ -160,7 +206,7 @@ namespace NEbml.Core
 		/// <returns></returns>
 		public int Write(VInt elementId, byte[] data, int offset, int length)
 		{
-			var headLen = elementId.Write(_stream) + EncodeWidth((uint) length).Write(_stream);
+			var headLen = elementId.Write(_stream) + EncodeWidth((uint)length).Write(_stream);
 			_stream.Write(data, offset, length);
 			return headLen + length;
 		}
@@ -226,7 +272,7 @@ namespace NEbml.Core
 
 		private int WriteInt(Int64 value, uint length)
 		{
-			if(length > 8) throw new ArgumentOutOfRangeException(nameof(length));
+			if (length > 8) throw new ArgumentOutOfRangeException(nameof(length));
 			if (value == 0 && length == 0) return 0;
 
 			var buffer = new byte[length];
@@ -253,7 +299,7 @@ namespace NEbml.Core
 				buffer[p] = (byte)(data & 0xff);
 			}
 
-			return Write(buffer, 0, (int) length);
+			return Write(buffer, 0, (int)length);
 		}
 
 		[ThreadStatic] // avoid thread sync code

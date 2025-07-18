@@ -35,7 +35,7 @@ namespace NEbml.Core
 
 		private VInt(ulong encodedValue, int length)
 		{
-			if(length < 1 || length > 8)
+			if (length < 1 || length > 8)
 				throw new ArgumentOutOfRangeException(nameof(length));
 
 			EncodedValue = encodedValue;
@@ -83,7 +83,7 @@ namespace NEbml.Core
 		/// <returns>The ulong value or null if reserved</returns>
 		public static implicit operator ulong?(VInt value)
 		{
-			return !value.IsReserved ? value.Value : (ulong?) null;
+			return !value.IsReserved ? value.Value : (ulong?)null;
 		}
 
 		#endregion
@@ -105,9 +105,9 @@ namespace NEbml.Core
 			if (length > 0 && DataBitsMask[length] <= value)
 				throw new ArgumentException("Specified width is not sufficient to encode value", nameof(value));
 
-			if(length == 0)
+			if (length == 0)
 			{
-				while (DataBitsMask[++length] <= value) {}
+				while (DataBitsMask[++length] <= value) { }
 			}
 
 			var sizeMarker = 1UL << (7 * length);
@@ -140,7 +140,7 @@ namespace NEbml.Core
 				throw new ArgumentOutOfRangeException(nameof(length));
 
 			var sizeMarker = 1UL << (7 * length);
-			var dataBits   = (1UL << (7 * length)) - 1;
+			var dataBits = (1UL << (7 * length)) - 1;
 			return new VInt(sizeMarker | dataBits, length);
 		}
 
@@ -189,7 +189,7 @@ namespace NEbml.Core
 				throw new EndOfStreamException();
 			}
 
-			if(buffer[0] == 0)
+			if (buffer[0] == 0)
 				throw new EbmlDataFormatException("Length bigger than 8 is not supported");
 			// Note: EBMLMaxSizeWidth is not currently supported - would require additional EBML header parsing
 
@@ -271,7 +271,7 @@ namespace NEbml.Core
 		{
 			unchecked
 			{
-				return (EncodedValue.GetHashCode()*397) ^ _length.GetHashCode();
+				return (EncodedValue.GetHashCode() * 397) ^ _length.GetHashCode();
 			}
 		}
 
