@@ -20,35 +20,40 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * */
 
+using System;
 using System.IO;
 
 namespace NEbml.Core
 {
 	/// <summary>
-	/// Extension methods for Stream operations
+	/// Abstract base class for EBML master element writing strategies (Buffered, Backpatching, etc).
+	/// Provides the contract for flushing and disposing master element writers.
 	/// </summary>
-	public static class StreamExtensions
+	/// <remarks>
+	/// Initializes a new instance of the <see cref="MasterElementWriterBase"/> class.
+	/// </remarks>
+	/// <param name="stream">The stream to write to.</param>
+	public abstract class MasterElementWriterBase(Stream stream) : EbmlWriter(stream), IDisposable
 	{
+		private bool _flushed;
 		/// <summary>
-		/// Reads data from a stream until the requested number of bytes is read or end of stream is reached
+		/// Delegate that implements the flush logic for the master element writer.
 		/// </summary>
-		/// <param name="stream">The stream to read from</param>
-		/// <param name="buffer">The buffer to store read data</param>
-		/// <param name="offset">The offset in the buffer to start storing data</param>
-		/// <param name="count">The number of bytes to read</param>
-		/// <returns>The total number of bytes read</returns>
-		public static int ReadFully(this Stream stream, byte[] buffer, int offset, int count)
+		protected Action FlushImpl { get; set; }
+
+		/// <summary>
+		/// Gets the buffer stream used for writing the master element.
+		/// </summary>
+		protected Stream BufferStream => BaseStream;
+
+		/// <summary>
+		/// Disposes the master element writer and flushes any pending data.
+		/// </summary>
+		public void Dispose()
 		{
-			int bytesRead = 0;
-			int totalBytesRead = 0;
-
-			do
-			{
-				bytesRead = stream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
-				totalBytesRead += bytesRead;
-			} while (bytesRead > 0 && totalBytesRead < count);
-
-			return totalBytesRead;
+			if (_flushed) return;
+			FlushImpl();
+			_flushed = true;
 		}
 	}
 }

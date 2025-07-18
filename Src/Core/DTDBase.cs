@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2011-2025 Oleg Zee
+/* Copyright (c) 2011-2025 Oleg Zee
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -118,23 +118,23 @@ namespace NEbml.Core
 		/// <summary>
 		/// Specialized element descriptor for master elements (containers)
 		/// </summary>
-		public class MasterElementDescriptor:ElementDescriptor
+		public class MasterElementDescriptor : ElementDescriptor
 		{
 			/// <summary>
 			/// Initializes a new instance of the MasterElementDescriptor class
 			/// </summary>
 			/// <param name="identifier">Element identifier</param>
 			/// <param name="name">Element name</param>
-			protected MasterElementDescriptor(long identifier, string name = "") : base(identifier, name, ElementType.MasterElement) {}
+			protected MasterElementDescriptor(long identifier, string name = "") : base(identifier, name, ElementType.MasterElement) { }
 		}
 	}
 
 	/// <summary>
 	/// Appendix C. EBML Standard definitions.
 	/// </summary>
-	public class StandardDtd:DTDBase
+	public class StandardDtd : DTDBase
 	{
-		private StandardDtd() {}
+		private StandardDtd() { }
 
 		/// <summary>
 		/// EBML header element descriptor
@@ -171,13 +171,13 @@ namespace NEbml.Core
 			/// <summary>Document type version number</summary>
 			/// <summary>Minimum document type version required to read this file</summary>
 			public readonly ElementDescriptor
-				EBMLVersion          = Uint(0x4286, nameof(EBMLVersion)),
-				EBMLReadVersion      = Uint(0x42f7, nameof(EBMLReadVersion)),
-				EBMLMaxIDLength      = Uint(0x42f2, nameof(EBMLMaxIDLength)),
-				EBMLMaxSizeLength    = Uint(0x42f3, nameof(EBMLMaxSizeLength)),
-				DocType              = Ascii(0x4282, nameof(DocType)),
-				DocTypeVersion       = Uint(0x4287, nameof(DocTypeVersion)),
-				DocTypeReadVersion   = Uint(0x4285, nameof(DocTypeReadVersion));
+				EBMLVersion = Uint(0x4286, nameof(EBMLVersion)),
+				EBMLReadVersion = Uint(0x42f7, nameof(EBMLReadVersion)),
+				EBMLMaxIDLength = Uint(0x42f2, nameof(EBMLMaxIDLength)),
+				EBMLMaxSizeLength = Uint(0x42f3, nameof(EBMLMaxSizeLength)),
+				DocType = Ascii(0x4282, nameof(DocType)),
+				DocTypeVersion = Uint(0x4287, nameof(DocTypeVersion)),
+				DocTypeReadVersion = Uint(0x4285, nameof(DocTypeReadVersion));
 		}
 
 		/// <summary>

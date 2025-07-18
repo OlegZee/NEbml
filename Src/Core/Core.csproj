@@ -6,7 +6,7 @@
     <RootNamespace>NEbml.Core</RootNamespace>
     <AssemblyName>NEbml.Core</AssemblyName>
     <Description>Lightweight EBML binary format reader/writer</Description>
-    <LangVersion>8</LangVersion>
+    <LangVersion>12</LangVersion>
     <Authors>Oleg Zee</Authors>
     <RepositoryUrl>https://github.com/OlegZee/NEbml</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

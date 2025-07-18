@@ -78,7 +78,7 @@ namespace NEbml.Core
 			_container.Remaining -= _element.Size;
 			_element = _container;
 
-			if(_element.Remaining < 1)
+			if (_element.Remaining < 1)
 			{
 				_element = Element.Empty;
 				return false;
@@ -191,16 +191,16 @@ namespace NEbml.Core
 			{
 				throw new InvalidOperationException();
 			}
-			
+
 			// Skip any remaining data in current element
 			Skip(_element.Remaining);
-			
+
 			// Account for current element size in container
 			_container.Remaining -= _element.Size;
-			
+
 			// Reset current element before handling container exit
 			_element = Element.Empty;
-			
+
 			// For unknown-size containers, we don't skip remaining data
 			// because the "size" was just an estimate. The actual size consumed
 			// is determined by what was actually read.
@@ -209,7 +209,7 @@ namespace NEbml.Core
 				// For known-size containers, skip any remaining data  
 				Skip(_container.Remaining);
 			}
-			
+
 			// Calculate actual size consumed by the container
 			long actualSizeConsumed;
 			if (_container.IsUnknownSize)
@@ -223,10 +223,10 @@ namespace NEbml.Core
 				// For known-size containers, the declared size is the actual size
 				actualSizeConsumed = _container.Size;
 			}
-			
+
 			// Restore parent container
 			_container = _containers.Pop();
-			
+
 			// Update parent container's remaining size based on actual consumption
 			_container.Remaining -= actualSizeConsumed;
 		}
@@ -246,7 +246,7 @@ namespace NEbml.Core
 				throw new EbmlDataFormatException("invalid signed integer size");
 			}
 			_element.Type = ElementType.SignedInteger;
-			var encodedValueSize = (int) _element.Size;
+			var encodedValueSize = (int)_element.Size;
 
 			return encodedValueSize == 0 ? 0L : ReadSignedIntegerUnsafe(encodedValueSize);
 		}
@@ -269,7 +269,7 @@ namespace NEbml.Core
 			}
 			_element.Type = ElementType.UnsignedInteger;
 
-			var encodedValueSize = (int) _element.Size;
+			var encodedValueSize = (int)_element.Size;
 			return encodedValueSize == 0 ? 0L : ReadUnsignedIntegerUnsafe(encodedValueSize);
 		}
 
@@ -291,20 +291,20 @@ namespace NEbml.Core
 				throw new EbmlDataFormatException("invalid float size");
 			}
 			_element.Type = ElementType.Float;
-			var encodedValueSize = (int) _element.Size;
-			
+			var encodedValueSize = (int)_element.Size;
+
 			// EBML specification: zero-size element returns default value of 0.0
 			if (encodedValueSize == 0)
 			{
 				return 0.0;
 			}
-			
+
 			var num = ReadUnsignedIntegerUnsafe(encodedValueSize);
 
 			switch (encodedValueSize)
 			{
 				case 4:
-					return new Union {ulval = num}.fval;
+					return new Union { ulval = num }.fval;
 				case 8:
 					return new Union { ulval = num }.dval;
 				default:
@@ -327,16 +327,16 @@ namespace NEbml.Core
 				throw new EbmlDataFormatException("invalid date size");
 			}
 			_element.Type = ElementType.Date;
-			
+
 			// EBML specification: zero-size element returns default value of millennium start
 			if (_element.Size == 0)
 			{
 				return MilleniumStart;
 			}
-			
+
 			var ns = ReadSignedIntegerUnsafe(8);
 
-			return MilleniumStart.AddTicks(ns/100);
+			return MilleniumStart.AddTicks(ns / 100);
 		}
 
 		/// <summary>
@@ -380,7 +380,7 @@ namespace NEbml.Core
 			{
 				return -1;
 			}
-			var r = _source.ReadFully(buffer, offset, (int) Math.Min(_element.Remaining, length));
+			var r = _source.ReadFully(buffer, offset, (int)Math.Min(_element.Remaining, length));
 			if (r == 0)
 			{
 				throw new EndOfStreamException();
@@ -473,7 +473,7 @@ namespace NEbml.Core
 			while (length > 0L)
 			{
 				var buffer = GetSharedBuffer(2048);
-				var r = _source.ReadFully(buffer, 0, (int) Math.Min(length, buffer.Length));
+				var r = _source.ReadFully(buffer, 0, (int)Math.Min(length, buffer.Length));
 				if (r == 0)
 				{
 					throw new EndOfStreamException();
@@ -499,7 +499,7 @@ namespace NEbml.Core
 			if (identifier.Value == 0)
 			{
 				throw new EbmlDataFormatException("invalid element identifier value");
-			}			// EBML specification compliance: Element ID must be encoded in shortest form
+			}           // EBML specification compliance: Element ID must be encoded in shortest form
 			if (!identifier.IsValidIdentifier)
 			{
 				throw new EbmlDataFormatException("element identifier not encoded in shortest form");
@@ -507,7 +507,7 @@ namespace NEbml.Core
 
 			// Read Element Data Size VINT (up to 8 bytes as per EBML specification)
 			var vsize = ReadVarInt(8);
-			
+
 			// EBML specification compliance: Handle unknown-size elements
 			// "An Element Data Size with all VINT_DATA bits set to one is reserved as an 
 			// indicator that the size of the EBML Element is unknown"
@@ -591,20 +591,20 @@ namespace NEbml.Core
 				throw new InvalidOperationException();
 			}
 			_element.Type = ElementType.AsciiString; // or UTF_8_STRING, but for the housekeeping it does not matter
-			var encodedValueSize = (int) _element.Size;
+			var encodedValueSize = (int)_element.Size;
 			if (encodedValueSize == 0)
 			{
 				return "";
 			}
 
 			var buffer = FillBuffer(encodedValueSize);
-			
+
 			// EBML specification: string should be terminated at first null octet
 			int stringLength = encodedValueSize;
 			for (int i = 0; i < encodedValueSize; i++)
 			{
 				if (buffer[i] == 0)
-			{
+				{
 					stringLength = i;
 					break;
 				}
