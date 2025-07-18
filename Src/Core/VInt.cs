@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2020 Oleg Zee
+/* Copyright (c) 2011-2025 Oleg Zee
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -191,7 +191,7 @@ namespace NEbml.Core
 
 			if(buffer[0] == 0)
 				throw new EbmlDataFormatException("Length bigger than 8 is not supported");
-			// TODO handle EBMLMaxSizeWidth
+			// Note: EBMLMaxSizeWidth is not currently supported - would require additional EBML header parsing
 
 			var extraBytes = (buffer[0] & 0xf0) != 0
 				? ExtraBytesSize[buffer[0] >> 4]
