@@ -494,12 +494,7 @@ namespace NEbml.Core
 			{
 				throw new EbmlDataFormatException("invalid element identifier value");
 			}
-
-			// EBML specification compliance: Element ID cannot have all data bits set to 0
-			if (identifier.Value == 0)
-			{
-				throw new EbmlDataFormatException("invalid element identifier value");
-			}           // EBML specification compliance: Element ID must be encoded in shortest form
+			// EBML specification compliance: Element ID must be encoded in shortest form
 			if (!identifier.IsValidIdentifier)
 			{
 				throw new EbmlDataFormatException("element identifier not encoded in shortest form");
