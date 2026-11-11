@@ -1,60 +1,84 @@
-// xake build file
+// Xake build file
+//
+//   dotnet fsi build.fsx -- -- [targets]     (default target: main = build, test, pack)
+//   dotnet fsi build.fsx -- -- push          (VERSION and NUGET_KEY from the environment)
+//
+// A failing command fails the build: Xake prints the error and exits with code 2.
 
-#r "nuget: Xake, 2.3.0"
+#r "nuget: Xake, 4.0.0"
 
 open Xake
 open Xake.Tasks
 
+// Every `sh` below says `failonerror` explicitly. In Xake 4.0.0 only the empty form
+// `sh "..." { () }` fails on a non-zero exit code by default; a block with settings
+// (`workdir`, `args`) starts from options that ignore the exit code. That is how a
+// rejected `dotnet nuget push` (403, expired key) ended in "Build completed" for v1.1.1.
 
-let (=?) value deflt = value |> Option.defaultValue deflt
+let packageDir = "out/nupkg"
 
-let getVersion () = recipe {
-    let! ver = getEnv "VERSION"
-    return ver =? "0.0.1"
+let getVersion = recipe {
+    let! ver = getVar "VERSION"
+    return ver |> Option.defaultValue "0.0.1"
 }
 
-do xake {ExecOptions.Default with FileLog = "build.log"; ConLogLevel = Loud } {
+do xakeScript {
+    filelog "build.log" Chatty
+    consolelog Chatty       // Info level: the console (and CI log) shows the tools' output, errors included
 
-    rules [
-        "main"  <== ["build"; "test"; "pack"]
+    var "VERSION" [Env "VERSION"; Default "0.0.1"]
+    var "NUGET_KEY" [Env "NUGET_KEY"; Secret]   // never logged; masked as *** in every log
+    var "NUGET_SOURCE" [Env "NUGET_SOURCE"; Default "https://api.nuget.org/v3/index.json"]
 
-        "clean" => recipe {
-            do! rm { dir "Src/**/bin" }
-            do! rm { dir "Src/**/obj" }
+    "main" <<< ["build"; "test"; "pack"]
+
+    command "clean" {
+        do! rm { dir "Src/**/bin" }
+        do! rm { dir "Src/**/obj" }
+        do! rm { dir "out" }
+    }
+
+    command "build" {
+        let! ver = getVersion
+        do! sh "dotnet build Src/Core/Core.csproj -c Release" {
+            arg $"-p:Version={ver}"
+            failonerror
         }
+    }
 
-        "build" ..> recipe {
-            do! dependsOn !! "Src/Core/**/*.cs"
-            let! ver = getVersion()
-            do! sh $"dotnet build -c Release -p:Version={ver}" { workdir "Src/Core" }
+    command "test" {
+        do! sh "dotnet test Src/Core.Tests/Core.Tests.csproj" {
+            failonerror
         }
+    }
 
-        "test" ..> recipe {
-            do! dependsOn !! "Src/Core.Tests/**/*.cs"
-            do! sh "dotnet test" { workdir "Src/Core.Tests" }
+    command "pack" {
+        let! ver = getVersion
+        do! rm { dir packageDir }
+        do! sh "dotnet pack Src/Core/Core.csproj -c Release" {
+            args [$"-p:Version={ver}"; "-o"; packageDir]
+            failonerror
         }
+    }
 
-        "pack" ..> recipe {
-            let! ver = getVersion()
-            do! sh $"dotnet pack -c Release -p:Version={ver}" { workdir "Src/Core" }
+    command "push" {
+        let! key = getVar "NUGET_KEY"
+        let key =
+            match key with
+            | Some k when k.Trim() <> "" -> k
+            | _ -> failwith "NUGET_KEY is not set: the package cannot be pushed"
+
+        do! need ["pack"]
+        let! ver = getVersion
+        let! source = getVar "NUGET_SOURCE"
+
+        do! sh "dotnet nuget push" {
+            args [
+                $"{packageDir}/NEbml.{ver}.nupkg"
+                "--api-key"; key
+                "--source"; Option.get source
+            ]
+            failonerror
         }
-
-        "push" => action {
-            do! need ["pack"]
-
-            let! ver = getVersion()
-            let! nuget_key_var = getEnv "NUGET_KEY"
-
-            let package_name = $"NEbml.{ver}.nupkg"
-            let nuget_key = nuget_key_var =? ""
-            do! sh "dotnet nuget push" {
-                workdir "Src/Core/bin/Release"
-                args [
-                    package_name
-                    "--api-key"; nuget_key
-                    "--source"; "https://api.nuget.org/v3/index.json"
-                ]
-            }
-        }
-    ]
+    }
 }
