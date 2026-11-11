@@ -197,9 +197,15 @@ namespace Core.Tests
 			var elementId = VInt.MakeId(0x80);
 			WriteElement(elementId, new byte[] { 0x01, 0x02, 0x03 });
 
+			var zeroElementId = VInt.MakeId(0);   // emits the single byte 0x80
+			WriteElement(zeroElementId, new byte[] { 0x2A });
+
 			StartReader();
 			Assert.IsTrue(_reader.ReadNext());
 			Assert.AreEqual(elementId, _reader.ElementId);
+
+			Assert.IsTrue(_reader.ReadNext());
+			Assert.AreEqual(zeroElementId, _reader.ElementId);
 		}
 
 		[Test]
@@ -1074,15 +1080,18 @@ namespace Core.Tests
 		}
 
 		[Test]
-		public void ReadNext_WithAllZeroElementId_ThrowsEbmlDataFormatException()
+		public void ReadNext_WithAllZeroElementId_IsValid()
 		{
-			// Element ID with all VINT_DATA bits set to zero is invalid
-			_stream.WriteByte(0x80); // 1-byte VINT with all data bits as zero
-			_stream.WriteByte(0x81); // Size = 1
-			_stream.WriteByte(0x00); // Data
+			// RFC 9559 §4.2 legalized 0x80 (RFC 8794 reserved it; one-octet IDs had
+			// to start at 0x81). See https://www.rfc-editor.org/rfc/rfc9559.html#name-updates-to-rfc-8794
+			_stream.WriteByte(0x80); // 1-octet VINT, VINT_DATA all zero
+			_stream.WriteByte(0x81); // size = 1
+			_stream.WriteByte(0x00);
 
 			StartReader();
-			Assert.Throws<EbmlDataFormatException>(() => _reader.ReadNext());
+			Assert.IsTrue(_reader.ReadNext());
+			Assert.AreEqual(VInt.FromEncoded(0x80), _reader.ElementId);
+			Assert.AreEqual(1UL, _reader.ElementSize);
 		}
 
 		[Test]
