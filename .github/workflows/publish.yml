@@ -29,11 +29,17 @@ jobs:
     - name: Build and test
       run: dotnet fsi build.fsx -- -- build test
     
+    - name: Get temporary NuGet key
+      id: login
+      uses: NuGet/login@v1
+      with:
+        user: ${{ secrets.NUGET_USER }}
+        
     - name: Publish
       run: dotnet fsi build.fsx -- -- push
       env:
         VERSION: ${{ steps.version.outputs.version }}
-        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+        NUGET_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
     
     - name: Upload build log
       uses: actions/upload-artifact@v4
